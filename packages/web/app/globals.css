@@ -1,0 +1,149 @@
+@import "tailwindcss";
+
+@theme {
+  --color-bg-dark: #030303;
+  --color-border-subtle: rgba(255, 255, 255, 0.08);
+  --color-text-primary: #ededed;
+  --color-text-secondary: #8a8a8a;
+  --color-accent: #ededed;
+  --font-sans: var(--font-geist-sans), sans-serif;
+  --font-mono: var(--font-geist-mono), monospace;
+}
+
+:root {
+  --background: #030303;
+  --foreground: #ededed;
+  --text-muted: rgba(255, 255, 255, 0.6);
+  --text-subtle: rgba(255, 255, 255, 0.4);
+  --border-color: rgba(255, 255, 255, 0.08);
+  --border-subtle: rgba(255, 255, 255, 0.04);
+  --card-bg: #080808;
+  --card-hover: rgba(255, 255, 255, 0.02);
+  --grid-line-color: rgba(255, 255, 255, 0.09);
+  --glow-color: rgba(255, 255, 255, 0.03);
+  --logo-dot: #ffffff;
+  --selection-bg: rgba(255, 255, 255, 0.2);
+  --selection-fg: #ffffff;
+  --btn-bg: #ffffff;
+  --btn-fg: #000000;
+  --btn-hover: rgba(255, 255, 255, 0.9);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+
+  /* Inverted Footer Theme: Soft Off-White / Bone Gray & Black text in Dark Mode */
+  --footer-bg: #e5e5e5;
+  --footer-fg: #0a0a0a;
+  --footer-text-muted: rgba(10, 10, 10, 0.7);
+  --footer-text-subtle: rgba(10, 10, 10, 0.48);
+  --footer-border: rgba(0, 0, 0, 0.12);
+  --footer-border-subtle: rgba(0, 0, 0, 0.08);
+  --footer-card-bg: #dcdcdc;
+  --footer-card-hover: rgba(0, 0, 0, 0.05);
+  --footer-selection-bg: rgba(0, 0, 0, 0.18);
+  --footer-selection-fg: #000000;
+}
+
+[data-theme="light"] {
+  --background: #fafafa;
+  --foreground: #111111;
+  --text-muted: rgba(0, 0, 0, 0.65);
+  --text-subtle: rgba(0, 0, 0, 0.45);
+  --border-color: rgba(0, 0, 0, 0.1);
+  --border-subtle: rgba(0, 0, 0, 0.05);
+  --card-bg: #ffffff;
+  --card-hover: rgba(0, 0, 0, 0.02);
+  --grid-line-color: rgba(0, 0, 0, 0.035);
+  --glow-color: rgba(0, 0, 0, 0.02);
+  --logo-dot: #111111;
+  --selection-bg: rgba(0, 0, 0, 0.15);
+  --selection-fg: #111111;
+  --btn-bg: #111111;
+  --btn-fg: #ffffff;
+  --btn-hover: rgba(17, 17, 17, 0.9);
+
+  /* Inverted Footer Theme: Deep Black & White text in Light Mode */
+  --footer-bg: #0a0a0a;
+  --footer-fg: #ffffff;
+  --footer-text-muted: rgba(255, 255, 255, 0.7);
+  --footer-text-subtle: rgba(255, 255, 255, 0.48);
+  --footer-border: rgba(255, 255, 255, 0.12);
+  --footer-border-subtle: rgba(255, 255, 255, 0.08);
+  --footer-card-bg: #141414;
+  --footer-card-hover: rgba(255, 255, 255, 0.05);
+  --footer-selection-bg: rgba(255, 255, 255, 0.25);
+  --footer-selection-fg: #ffffff;
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  margin: 0;
+  padding: 0;
+  min-height: 100dvh;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+/* Scrollbars for terminal components */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-subtle);
+}
+
+/* Subtle background grid */
+.bg-grid-pattern {
+  background-size: 60px 60px;
+  background-image: 
+    linear-gradient(to right, var(--grid-line-color) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--grid-line-color) 1px, transparent 1px);
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+.animate-cursor-blink {
+  animation: blink 1s step-end infinite;
+}
+
+/* Smooth terminal canvas styling overrides */
+.xterm {
+  height: 100%;
+  padding: 8px;
+}
+
+.xterm-viewport {
+  background-color: transparent !important;
+  overflow-y: auto !important;
+}
+
+.xterm-screen {
+  font-feature-settings: "liga" 0;
+}
+
+/* Explicit Inverted Footer Selection Rules */
+footer ::selection {
+  background-color: #000000 !important;
+  color: #ffffff !important;
+}
+
+[data-theme="light"] footer ::selection {
+  background-color: #ffffff !important;
+  color: #000000 !important;
+}
