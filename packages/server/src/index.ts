@@ -206,13 +206,14 @@ wss.on("connection", (ws: WebSocket) => {
         }
         case "host_command": {
           if (!currentSessionId) return;
-          const { command } = message.payload || {};
+          const { command, isSafetyMode } = message.payload || {};
           const cleaned = cleanAnsi(command);
           if (cleaned) {
             const session = await store.getSession(currentSessionId);
             const hostName = session?.hostId ? session.hostId.replace(/^@+/, '') : "Host";
-            console.log(`[Server] Received host_command for session ${currentSessionId} from ${hostName}: "${cleaned}"`);
-            logCommand(currentSessionId, hostName, cleaned)
+            const commandToLog = isSafetyMode ? "[REDACTED - SAFETY MODE]" : cleaned;
+            console.log(`[Server] Received host_command for session ${currentSessionId} from ${hostName}: "${commandToLog}"${isSafetyMode ? " (Safety Mode active)" : ""}`);
+            logCommand(currentSessionId, hostName, commandToLog)
               .then((success) => console.log(`[Server] DB log success: ${success}`))
               .catch((err) => console.error("[Server] DB log error:", err));
           }
@@ -225,6 +226,7 @@ wss.on("connection", (ws: WebSocket) => {
           if (!session) return;
 
           const dataStr = message.payload?.data || "";
+          const isSafetyMode = !!message.payload?.isSafetyMode;
 
           // Only buffer command logging for collaborators (non-hosts), 
           // because isHost terminal_data is raw PTY stdout stream with ANSI codes.
@@ -235,7 +237,8 @@ wss.on("connection", (ws: WebSocket) => {
               const rawCommand = (currentBuf + dataStr).replace(/[\r\n]+/g, "").trim();
               const fullCommand = cleanAnsi(rawCommand);
               if (fullCommand) {
-                logCommand(currentSessionId, clientName, fullCommand).catch(console.error);
+                const commandToLog = isSafetyMode ? "[REDACTED - SAFETY MODE]" : fullCommand;
+                logCommand(currentSessionId, clientName, commandToLog).catch(console.error);
               }
               commandBuffers.set(currentClientId, "");
             } else if (dataStr === "\u007f" || dataStr === "\b") {

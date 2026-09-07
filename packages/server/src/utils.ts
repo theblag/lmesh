@@ -4,16 +4,17 @@
  */
 export function cleanAnsi(str: string): string {
   if (!str) return "";
+  if (str.includes("[REDACTED")) return str.trim();
+
   return str
     // 1. Remove standard ANSI escape sequences (\x1b...)
     .replace(/\x1b\[[0-9;?]*[a-zA-Z]/g, "")
     .replace(/\x1b\][^\x07]*\x07/g, "")
     .replace(/\x1b[()][AB012]/g, "")
     .replace(/\x1b[=>]/g, "")
-    // 2. Remove residual terminal control sequences (e.g. [?9001h, [2J, [4;1H, [K, ]0;...)
+    // 2. Remove residual terminal control sequences (e.g. [?9001h, [2J, [4;1H, ]0;...)
     .replace(/\[\?[0-9]+[hl]/g, "")
     .replace(/\[[0-9;]+[hHlLMK]/g, "")
-    .replace(/\[[a-zA-Z]/g, "")
     .replace(/\]0;[^\r\n]*/g, "")
     // 3. Remove common shell header noise and prompts
     .replace(/Windows PowerShell\s*Copyright \(C\) Microsoft Corporation\. All rights reserved\./gi, "")

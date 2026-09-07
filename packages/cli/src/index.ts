@@ -96,7 +96,7 @@ program
             console.log(`Host: @${userConfig.user.username}`);
             console.log(`Share this link with collaborators:`);
             console.log(`http://localhost:3000/${sessionId}`);
-            console.log(`\x1b[90m(Type 'exit' or press Ctrl+] to end session)\x1b[0m\n`);
+            console.log(`\x1b[90m(Type 'exit' or press Ctrl+] to end session • Ctrl+S for Safety Mode)\x1b[0m\n`);
             startSession(ws);
             break;
           }
@@ -208,12 +208,25 @@ program
       );
 
       let hostCmdBuf = "";
+      let isHostSafetyMode = false;
+
       process.stdin.on("data", (key: string) => {
         // Ctrl+] (\x1d) escape sequence to exit lmesh share session
         if (key === "\x1d") {
           process.stderr.write("\n\x1b[33m[lmesh] Exiting session via Ctrl+]...\x1b[0m\n");
           cleanup();
           process.exit(0);
+        }
+
+        // Ctrl+S (\x13) escape sequence to toggle Safety Mode (redacting audit logs)
+        if (key === "\x13") {
+          isHostSafetyMode = !isHostSafetyMode;
+          if (isHostSafetyMode) {
+            process.stderr.write("\r\n\x1b[33m[lmesh] 🔒 Safety Mode: ON (Commands will be redacted in audit logs)\x1b[0m\r\n");
+          } else {
+            process.stderr.write("\r\n\x1b[32m[lmesh] 🔓 Safety Mode: OFF (Normal audit logging)\x1b[0m\r\n");
+          }
+          return;
         }
 
         if (isPromptingForControl && pendingGrantClientId) {
@@ -257,7 +270,10 @@ program
             socket.send(
               JSON.stringify({
                 type: "host_command",
-                payload: { command: cleanCmd },
+                payload: { 
+                  command: cleanCmd,
+                  isSafetyMode: isHostSafetyMode
+                },
               })
             );
           }

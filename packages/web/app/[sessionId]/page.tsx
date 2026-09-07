@@ -85,6 +85,14 @@ export default function SessionPage({ params }: { params: Promise<{ sessionId: s
   const [socketStatus, setSocketStatus] = useState<"connecting" | "connected" | "disconnected">("connecting");
   const [isHost, setIsHost] = useState(false);
 
+  // Safety Mode State (Redacts sensitive commands in audit logging)
+  const [safetyMode, setSafetyMode] = useState(false);
+  const safetyModeRef = useRef(false);
+
+  useEffect(() => {
+    safetyModeRef.current = safetyMode;
+  }, [safetyMode]);
+
   // UI Modal States
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isLogDrawerOpen, setIsLogDrawerOpen] = useState(false);
@@ -215,7 +223,10 @@ export default function SessionPage({ params }: { params: Promise<{ sessionId: s
           if (socket.readyState === WebSocket.OPEN && hasControlRef.current) {
             socket.send(JSON.stringify({
               type: "terminal_data",
-              payload: { data }
+              payload: { 
+                data,
+                isSafetyMode: safetyModeRef.current
+              }
             }));
 
             // Track input for real-time command audit logs
@@ -229,7 +240,7 @@ export default function SessionPage({ params }: { params: Promise<{ sessionId: s
                   timestamp: timeStr,
                   userName: username,
                   userRole: isHost ? "host" : "collaborator",
-                  command: cmd,
+                  command: safetyModeRef.current ? "[REDACTED - SAFETY MODE]" : cmd,
                   status: "executed"
                 };
                 setCommandLogs((prev) => [newEntry, ...prev]);
@@ -650,6 +661,14 @@ export default function SessionPage({ params }: { params: Promise<{ sessionId: s
               <GearIcon className="w-4 h-4" />
             </button>
 
+            {/* Safety Mode Active Badge */}
+            {safetyMode && (
+              <span className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-medium border border-amber-500/40 bg-amber-500/10 text-amber-300">
+                <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
+                SAFETY MODE
+              </span>
+            )}
+
             {/* Theme Toggle */}
             <ThemeToggle />
           </div>
@@ -664,6 +683,8 @@ export default function SessionPage({ params }: { params: Promise<{ sessionId: s
           <TerminalToolbar
             hasControl={hasControl}
             isReadOnly={isReadOnlySession}
+            safetyMode={safetyMode}
+            onToggleSafetyMode={() => setSafetyMode(prev => !prev)}
             onRequestControl={requestControl}
             onReleaseControl={handleRevokeControl}
             onClearTerminal={handleClearTerminal}

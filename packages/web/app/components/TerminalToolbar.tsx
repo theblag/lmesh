@@ -9,12 +9,16 @@ import {
   DesktopIcon,
   PlusIcon,
   MinusIcon,
-  SymbolIcon
+  SymbolIcon,
+  LockClosedIcon,
+  LockOpen1Icon
 } from "@radix-ui/react-icons";
 
 interface TerminalToolbarProps {
   hasControl: boolean;
   isReadOnly: boolean;
+  safetyMode?: boolean;
+  onToggleSafetyMode?: () => void;
   onRequestControl?: () => void;
   onReleaseControl?: () => void;
   onClearTerminal?: () => void;
@@ -28,6 +32,8 @@ interface TerminalToolbarProps {
 export function TerminalToolbar({
   hasControl,
   isReadOnly,
+  safetyMode = false,
+  onToggleSafetyMode,
   onRequestControl,
   onReleaseControl,
   onClearTerminal,
@@ -68,6 +74,34 @@ export function TerminalToolbar({
         >
           <KeyboardIcon className="w-3.5 h-3.5 text-white/60" />
           <span className="text-[11px] font-medium tracking-tight">Quick Keys</span>
+        </button>
+
+        {/* Safety Mode Toggle Button */}
+        <button
+          onClick={onToggleSafetyMode}
+          className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md border text-xs font-sans transition-all cursor-pointer shadow-xs ${
+            safetyMode
+              ? "bg-amber-500/15 border-amber-500/40 text-amber-300 shadow-[0_0_10px_rgba(245,158,11,0.2)]"
+              : "bg-white/[0.04] hover:bg-white/[0.08] border-white/10 text-white/70 hover:text-white"
+          }`}
+          title={
+            safetyMode
+              ? "Safety Mode ON: Commands will be redacted in audit logs"
+              : "Toggle Safety Mode: Redact sensitive commands in audit logs"
+          }
+        >
+          {safetyMode ? (
+            <>
+              <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
+              <LockClosedIcon className="w-3.5 h-3.5 text-amber-400" />
+              <span className="text-[11px] font-semibold tracking-tight text-amber-300">Safety ON</span>
+            </>
+          ) : (
+            <>
+              <LockOpen1Icon className="w-3.5 h-3.5 text-white/50" />
+              <span className="text-[11px] font-medium tracking-tight">Safety</span>
+            </>
+          )}
         </button>
 
         {showQuickKeys && (
