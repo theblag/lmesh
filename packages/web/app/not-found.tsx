@@ -10,10 +10,7 @@ import {
   CheckIcon,
   CopyIcon,
   HomeIcon,
-  ReloadIcon,
   GitHubLogoIcon,
-  ExclamationTriangleIcon,
-  RocketIcon,
 } from "@radix-ui/react-icons";
 
 // Precision-aligned ASCII 404 logo array per ASCII_ART_GUIDE.md
@@ -246,75 +243,67 @@ function NotFoundContent() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-(--background) text-(--foreground) font-sans selection:bg-(--selection-bg) selection:text-(--selection-fg) transition-colors duration-200">
-      {/* Header Bar */}
-      <header className="w-full border-b border-(--border-color) bg-(--background)/80 backdrop-blur-md sticky top-0 z-50">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-3 group">
-            <div className="w-8 h-8 rounded-lg bg-neutral-900 border border-neutral-700 flex items-center justify-center font-bold text-white shadow-inner group-hover:scale-105 transition-transform text-sm">
-              &gt;_
-            </div>
-            <span className="font-bold text-lg tracking-tight">
-              LMESH
-            </span>
+    <div className="w-full min-h-screen bg-(--background) text-(--foreground) bg-grid-pattern relative flex flex-col items-center justify-between selection:bg-(--selection-bg) selection:text-(--selection-fg) overflow-x-hidden transition-colors duration-200">
+      {/* Subtle background glow matching landing page */}
+      <div className="absolute top-[-10%] left-[50%] translate-x-[-50%] w-150 h-75 bg-(--glow-color) rounded-full blur-[120px] pointer-events-none" />
+
+      {/* Header Bar matching landing page */}
+      <header className="w-full max-w-5xl px-4 sm:px-8 h-16 flex items-center justify-between border-b border-(--border-subtle) z-10">
+        <Link href="/" className="flex items-center gap-2.5 group">
+          <img src="/lmesh-logo.png" alt="LMESH Logo" className="w-6 h-6 object-contain" />
+          <span className="font-mono text-sm tracking-widest uppercase font-semibold text-(--foreground)">lmesh</span>
+        </Link>
+
+        <nav className="flex items-center gap-4 sm:gap-6">
+          
+          <Link
+            href="/dashboard"
+            className="text-xs text-(--text-muted) hover:text-(--foreground) transition-colors font-sans tracking-tight"
+          >
+            Dashboard
           </Link>
-
-          <div className="flex items-center gap-3">
-            
-
-            <a
-              href="https://github.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="p-2 rounded-md border border-(--border-color) hover:bg-(--card-hover) transition-colors text-(--text-muted) hover:text-(--foreground)"
-              title="View on GitHub"
-            >
-              <GitHubLogoIcon className="w-4 h-4" />
-            </a>
-
-            <ThemeToggle />
-
-            <Link
-              href="/"
-              className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium border border-(--border-color) bg-(--card-bg) hover:bg-(--card-hover) transition-colors"
-            >
-              <HomeIcon className="w-3.5 h-3.5" />
-              Home
-            </Link>
-          </div>
-        </div>
+          <a
+            href="https://github.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-xs text-(--text-muted) hover:text-(--foreground) transition-colors font-sans tracking-tight flex items-center gap-1.5"
+          >
+            <GitHubLogoIcon className="w-3.5 h-3.5" />
+            GitHub
+          </a>
+          <ThemeToggle />
+        </nav>
       </header>
 
       {/* Main Content Area */}
-      <main className="flex-1 max-w-4xl w-full mx-auto px-4 py-8 sm:py-12 flex flex-col gap-8">
- {/* Banner Section */}
-        <div className="text-center space-y-4">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium border border-(--border-color) bg-(--card-bg) text-amber-400">
-            <ExclamationTriangleIcon className="w-3.5 h-3.5" />
-            HTTP ERROR 404
+      <main className="w-full max-w-4xl px-4 sm:px-8 py-10 md:py-14 flex flex-col gap-6 items-center text-center z-10">
+        {/* Banner Section */}
+        <div className="space-y-3 flex flex-col items-center">
+          <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-md text-[10px] font-mono tracking-wider uppercase border border-(--border-color) bg-(--card-bg) text-(--text-subtle)">
+            ERROR 404 / SESSION LOST
           </div>
 
-          <div className="flex justify-center my-2">
+          <div className="flex justify-center my-1">
             <div
               style={{ fontFamily: 'Consolas, "Courier New", monospace' }}
-              className="text-emerald-500 dark:text-emerald-400 whitespace-pre leading-none text-[10px] sm:text-xs md:text-sm font-bold tracking-normal select-none overflow-x-auto p-2"
+              className="text-(--foreground) opacity-85 whitespace-pre leading-none text-[10px] sm:text-xs md:text-sm font-bold tracking-normal select-none overflow-x-auto p-1"
             >
               {ASCII_404_BANNER}
             </div>
           </div>
 
-          <h1 className="text-2xl sm:text-4xl font-extrabold tracking-tight">
-            Session Lost in Hyperspace
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tighter leading-none text-(--foreground) font-sans">
+            Session lost in hyperspace.
           </h1>
 
-          <p className="text-sm sm:text-base text-(--text-muted) max-w-lg mx-auto">
+          <p className="text-(--text-muted) text-sm md:text-base leading-relaxed max-w-[50ch] font-sans">
             The collaborative shell session you are looking for does not exist, has expired, or was ended by the host.
           </p>
         </div>
 
         {/* Authentic Interactive Terminal Window */}
         <div
-          className="w-full bg-[#141414] border border-[#1e1e1e] rounded-xl overflow-hidden flex flex-col shadow-2xl font-fira"
+          className="w-full bg-[#141414] border border-(--border-color) rounded-md overflow-hidden flex flex-col shadow-2xl font-fira text-left"
         >
           {/* macOS style top bar */}
           <div className="w-full bg-[#1a1a1a] px-4 py-3 flex items-center justify-between border-b border-[#1e1e1e] shrink-0 select-none">
@@ -341,7 +330,7 @@ function NotFoundContent() {
 
           {/* Terminal content buffer */}
           <div
-            className="p-4 sm:p-5 font-mono text-[12px] leading-relaxed min-h-[250px] max-h-[380px] overflow-y-auto cursor-text space-y-1 select-text"
+            className="p-4 sm:p-5 font-mono text-[12px] leading-relaxed min-h-62.5 max-h-95 overflow-y-auto cursor-text space-y-1 select-text"
             onClick={() => inputRef.current?.focus()}
           >
             {logs.map((log, index) => (
@@ -370,7 +359,7 @@ function NotFoundContent() {
             {/* Active typing prompt line */}
             <div className="flex items-center flex-wrap pt-0.5" onClick={() => inputRef.current?.focus()}>
               <span className="text-[#555] select-none mr-2">guest@lmesh:~$</span>
-              <span className="text-[#f0f0f0] flex items-center min-h-[20px]">
+              <span className="text-[#f0f0f0] flex items-center min-h-5">
                 {input}
                 <span className="inline-block w-2 h-4 bg-[#f0f0f0] ml-0.5 align-middle animate-cursor-blink" />
               </span>
@@ -380,7 +369,7 @@ function NotFoundContent() {
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={handleKeyDown}
-                className="opacity-0 absolute -left-[9999px] pointer-events-none"
+                className="opacity-0 absolute left-[-9999px] pointer-events-none"
                 autoFocus
                 spellCheck={false}
               />
@@ -410,91 +399,57 @@ function NotFoundContent() {
           </div>
         </div>
 
-        {/* Action Cards Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4">
-          {/* Card 1: Return Home */}
-          <div className="p-5 rounded-xl border border-(--border-color) bg-(--card-bg) hover:border-neutral-600 transition-all flex flex-col justify-between space-y-4">
-            <div className="space-y-2">
-              <div className="w-9 h-9 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center">
-                <HomeIcon className="w-5 h-5" />
-              </div>
-              <h3 className="font-bold text-sm">Return Home</h3>
-              <p className="text-xs text-(--text-muted)">
-                Go back to the main landing page to explore live features or host a session.
-              </p>
-            </div>
-            <Link
-              href="/"
-              className="w-full py-2 px-3 rounded-md bg-(--foreground) text-(--background) hover:opacity-90 font-medium text-xs text-center flex items-center justify-center gap-1.5 transition-opacity"
+        {/* Compact Action Panel matching landing page */}
+        <div className="w-full border border-(--border-color) bg-(--card-bg) rounded-md p-3.5 sm:p-4 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
+          {/* Join session input */}
+          <form onSubmit={handleJoinSession} className="flex items-center gap-2 w-full sm:w-auto">
+            <input
+              type="text"
+              value={sessionInput}
+              onChange={(e) => setSessionInput(e.target.value)}
+              placeholder="Join session (e.g. x7k2m9p)"
+              className="bg-(--background) border border-(--border-color) rounded-md px-3 py-2 font-mono text-xs text-(--foreground) placeholder:text-(--text-subtle) focus:outline-none focus:border-(--foreground) transition-colors min-w-0 w-full sm:w-60"
+            />
+            <button
+              type="submit"
+              disabled={!sessionInput.trim()}
+              className="bg-(--btn-bg) hover:opacity-90 text-(--btn-fg) px-3.5 py-2 rounded-md font-mono text-xs font-semibold flex items-center gap-1.5 transition-opacity cursor-pointer shrink-0 disabled:opacity-40"
             >
-              Back to Home
+              Join
               <ArrowRightIcon className="w-3.5 h-3.5" />
-            </Link>
-          </div>
+            </button>
+          </form>
 
-          {/* Card 2: Join Existing Session */}
-          <div className="p-5 rounded-xl border border-(--border-color) bg-(--card-bg) hover:border-neutral-600 transition-all flex flex-col justify-between space-y-4">
-            <div className="space-y-2">
-              <div className="w-9 h-9 rounded-lg bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 flex items-center justify-center">
-                <RocketIcon className="w-5 h-5" />
-              </div>
-              <h3 className="font-bold text-sm">Join Session</h3>
-              <p className="text-xs text-(--text-muted)">
-                Have a session code from a host? Jump directly into their active terminal.
-              </p>
-            </div>
-            <form onSubmit={handleJoinSession} className="flex gap-2">
-              <input
-                type="text"
-                value={sessionInput}
-                onChange={(e) => setSessionInput(e.target.value)}
-                placeholder="Session ID (e.g. x7k2)"
-                className="flex-1 px-3 py-1.5 rounded-md border border-(--border-color) bg-(--background) text-xs focus:outline-none focus:border-cyan-500"
-              />
-              <button
-                type="submit"
-                disabled={!sessionInput.trim()}
-                className="px-3 py-1.5 rounded-md bg-cyan-600 hover:bg-cyan-500 text-white disabled:opacity-50 text-xs font-medium cursor-pointer transition-colors"
-              >
-                Join
-              </button>
-            </form>
-          </div>
-
-          {/* Card 3: Start Host CLI */}
-          <div className="p-5 rounded-xl border border-(--border-color) bg-(--card-bg) hover:border-neutral-600 transition-all flex flex-col justify-between space-y-4">
-            <div className="space-y-2">
-              <div className="w-9 h-9 rounded-lg bg-purple-500/10 border border-purple-500/20 text-purple-400 flex items-center justify-center">
-                <ReloadIcon className="w-5 h-5" />
-              </div>
-              <h3 className="font-bold text-sm">Host a Session</h3>
-              <p className="text-xs text-(--text-muted)">
-                Share your terminal with collaborators in seconds using the official CLI.
-              </p>
-            </div>
+          {/* Quick actions: Install CLI & Home */}
+          <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
             <button
               onClick={handleCopyInstall}
-              className="w-full py-2 px-3 rounded-md border border-(--border-color) bg-(--card-bg) hover:bg-(--card-hover) text-xs flex items-center justify-between cursor-pointer transition-colors text-left"
+              className="bg-(--background) hover:bg-(--card-hover) border border-(--border-color) rounded-md px-3 py-2 font-mono text-xs text-(--foreground) flex items-center gap-2 transition-colors cursor-pointer"
+              title="Copy install command"
             >
-              <span className="truncate">npm i -g lmesh</span>
-              {copied ? (
-                <CheckIcon className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-              ) : (
-                <CopyIcon className="w-3.5 h-3.5 text-(--text-muted) shrink-0" />
-              )}
+              <span>npm i -g lmesh</span>
+              {copied ? <CheckIcon className="w-3.5 h-3.5 text-(--foreground)" /> : <CopyIcon className="w-3.5 h-3.5 text-(--text-subtle)" />}
             </button>
+
+            <Link
+              href="/"
+              className="bg-(--btn-bg) hover:opacity-90 text-(--btn-fg) px-3.5 py-2 rounded-md text-xs font-semibold flex items-center gap-1.5 transition-opacity shrink-0"
+            >
+              <HomeIcon className="w-3.5 h-3.5" />
+              Home
+            </Link>
           </div>
         </div>
       </main>
 
-      {/* Sleek Minimal 404 Footer */}
-      <footer className="w-full border-t border-(--border-color) py-6 text-center text-xs text-(--text-muted) font-sans mt-auto">
-        <div className="max-w-4xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-3">
+      {/* Sleek Minimal 404 Footer matching landing page */}
+      <footer className="w-full border-t border-(--border-subtle) py-6 text-center text-xs text-(--text-subtle) font-sans mt-auto z-10">
+        <div className="max-w-5xl mx-auto px-4 sm:px-8 flex flex-col sm:flex-row items-center justify-between gap-3">
           <p>© {new Date().getFullYear()} LMESH — Live Multi-user Execution Shell.</p>
-          <div className="flex items-center gap-4">
-            <Link href="/" className="hover:text-(--foreground) transition-colors">Home</Link>
-            <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="hover:text-(--foreground) transition-colors">GitHub</a>
-            <Link href="/dashboard" className="hover:text-(--foreground) transition-colors">Dashboard</Link>
+          <div className="flex items-center gap-6">
+            <Link href="/" className="text-(--text-muted) hover:text-(--foreground) transition-colors">Home</Link>
+            <Link href="/dashboard" className="text-(--text-muted) hover:text-(--foreground) transition-colors">Dashboard</Link>
+            <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="text-(--text-muted) hover:text-(--foreground) transition-colors">GitHub</a>
           </div>
         </div>
       </footer>
