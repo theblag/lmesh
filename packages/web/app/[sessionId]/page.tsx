@@ -19,6 +19,7 @@ import { SessionSettingsModal } from "../components/SessionSettingsModal";
 import { CommandLogDrawer, LogEntry } from "../components/CommandLogDrawer";
 import { CommandApprovalModal, PendingRequest } from "../components/CommandApprovalModal";
 import { ShareSessionModal } from "../components/ShareSessionModal";
+import NotFound from "../not-found";
 
 interface Collaborator {
   id: string;
@@ -33,6 +34,9 @@ export default function SessionPage({ params }: { params: Promise<{ sessionId: s
   // Unwrap params using React.use()
   const { sessionId } = use(params);
 
+  // Session existence status
+  const [sessionStatus, setSessionStatus] = useState<"checking" | "found" | "not_found">("checking");
+
   // Onboarding username & security state
   const [username, setUsername] = useState("");
   const [sessionPasswordInput, setSessionPasswordInput] = useState("");
@@ -41,18 +45,35 @@ export default function SessionPage({ params }: { params: Promise<{ sessionId: s
   const [joiningError] = useState("");
 
   useEffect(() => {
-    if (sessionId) {
-      fetch(`http://localhost:3001/api/sessions/${sessionId}/info`)
-        .then((res) => res.json())
-        .then((data) => {
-          if (data && data.hasPassword) {
-            setRequiresPassword(true);
-          } else {
-            setRequiresPassword(false);
-          }
-        })
-        .catch(() => setRequiresPassword(false));
-    }
+    if (!sessionId) return;
+
+    let isMounted = true;
+    setSessionStatus("checking");
+
+    const serverUrl = process.env.NEXT_PUBLIC_SERVER_URL || "http://localhost:3001";
+    fetch(`${serverUrl}/api/sessions/${sessionId}/info`)
+      .then(async (res) => {
+        if (!isMounted) return;
+        if (res.status === 404 || !res.ok) {
+          setSessionStatus("not_found");
+          return;
+        }
+        const data = await res.json();
+        if (!data || data.exists === false) {
+          setSessionStatus("not_found");
+        } else {
+          setRequiresPassword(!!data.hasPassword);
+          setSessionStatus("found");
+        }
+      })
+      .catch(() => {
+        if (!isMounted) return;
+        setSessionStatus("not_found");
+      });
+
+    return () => {
+      isMounted = false;
+    };
   }, [sessionId]);
 
   // Session state
@@ -421,11 +442,29 @@ export default function SessionPage({ params }: { params: Promise<{ sessionId: s
     }
   };
 
+  // Check session validity
+  if (sessionStatus === "checking") {
+    return (
+      <ThemeProvider>
+        <div className="min-h-screen bg-bg-dark bg-grid-pattern flex flex-col items-center justify-center text-white selection:bg-white selection:text-black">
+          <div className="flex items-center gap-3 px-4 py-2 rounded-lg bg-black/40 border border-white/10 backdrop-blur-md">
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
+            <span className="font-mono text-xs text-neutral-300">Connecting to session relay...</span>
+          </div>
+        </div>
+      </ThemeProvider>
+    );
+  }
+
+  if (sessionStatus === "not_found") {
+    return <NotFound />;
+  }
+
   // Render Onboarding form if username is empty
   if (!isJoined) {
     return (
       <ThemeProvider>
-        <div className="min-h-screen bg-[#030303] bg-grid-pattern flex flex-col items-center justify-center px-6 py-8 selection:bg-white selection:text-black text-white transition-colors duration-200">
+        <div className="min-h-screen bg-bg-dark bg-grid-pattern flex flex-col items-center justify-center px-6 py-8 selection:bg-white selection:text-black text-white transition-colors duration-200">
           <div className="absolute top-[10%] left-[50%] translate-x-[-50%] w-100 h-100 bg-white/3 rounded-full blur-[100px] pointer-events-none" />
           
           <div className="w-full max-w-sm bg-[#09090b]/80 backdrop-blur-xl border border-white/10 rounded-xl p-8 space-y-6 z-10 shadow-2xl">
@@ -461,7 +500,7 @@ export default function SessionPage({ params }: { params: Promise<{ sessionId: s
               {/* Password protection input - ONLY rendered if session requires password */}
               {requiresPassword && (
                 <div className="space-y-2">
-                  <label htmlFor="password-input" className="block text-xs font-sans font-medium text-white/70 flex items-center justify-between">
+                  <label htmlFor="password-input" className="block text-xs font-sans font-medium text-white/70 items-center justify-between">
                     <span>Session Password</span>
                     <span className="text-[10px] text-amber-400 font-medium">(Required)</span>
                   </label>
@@ -483,7 +522,7 @@ export default function SessionPage({ params }: { params: Promise<{ sessionId: s
                 <button
                   type="button"
                   onClick={() => router.push("/")}
-                  className="flex-1 border border-white/10 hover:bg-white/[0.06] text-white/80 hover:text-white px-4 py-2.5 rounded-lg text-xs font-sans font-medium transition-all cursor-pointer"
+                  className="flex-1 border border-white/10 hover:bg-white/6 text-white/80 hover:text-white px-4 py-2.5 rounded-lg text-xs font-sans font-medium transition-all cursor-pointer"
                 >
                   Cancel
                 </button>
@@ -504,16 +543,16 @@ export default function SessionPage({ params }: { params: Promise<{ sessionId: s
 
   return (
     <ThemeProvider>
-      <div className="min-h-screen md:h-screen bg-[#030303] flex flex-col items-center justify-between text-white overflow-y-auto md:overflow-hidden transition-colors duration-200 font-sans">
+      <div className="min-h-screen md:h-screen bg-bg-dark flex flex-col items-center justify-between text-white overflow-y-auto md:overflow-hidden transition-colors duration-200 font-sans">
         
         {/* Workspace Header bar */}
-        <header className="w-full h-14 bg-[#09090b]/90 backdrop-blur-md border-b border-white/[0.08] px-6 flex items-center justify-between shrink-0 select-none font-sans">
+        <header className="w-full h-14 bg-[#09090b]/90 backdrop-blur-md border-b border-white/8 px-6 flex items-center justify-between shrink-0 select-none font-sans">
           
           {/* Left header controls */}
           <div className="flex items-center gap-4">
             <button 
               onClick={() => router.push("/")} 
-              className="text-white/60 hover:text-white transition-colors cursor-pointer p-1.5 rounded-md hover:bg-white/[0.08]"
+              className="text-white/60 hover:text-white transition-colors cursor-pointer p-1.5 rounded-md hover:bg-white/8"
               title="Leave Session"
             >
               <ArrowLeftIcon className="w-4 h-4" />
@@ -524,13 +563,13 @@ export default function SessionPage({ params }: { params: Promise<{ sessionId: s
                 socketStatus === "connected" ? "bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.6)]" : "bg-rose-500"
               }`} />
               <span className="text-xs text-white/60 font-sans tracking-tight">
-                Session: <span className="font-mono text-white font-medium bg-white/[0.06] border border-white/10 px-2 py-0.5 rounded text-[11px]">{sessionId}</span>
+                Session: <span className="font-mono text-white font-medium bg-white/6 border border-white/10 px-2 py-0.5 rounded text-[11px]">{sessionId}</span>
               </span>
 
               {/* Share Trigger */}
               <button
                 onClick={() => setIsShareOpen(true)}
-                className="ml-1 p-1.5 rounded-md hover:bg-white/[0.08] text-white/60 hover:text-white transition-colors cursor-pointer"
+                className="ml-1 p-1.5 rounded-md hover:bg-white/8 text-white/60 hover:text-white transition-colors cursor-pointer"
                 title="Share Session Link"
               >
                 <Share1Icon className="w-3.5 h-3.5" />
@@ -543,7 +582,7 @@ export default function SessionPage({ params }: { params: Promise<{ sessionId: s
               className={`hidden sm:flex items-center gap-1.5 px-3 py-1 rounded-full border text-xs font-sans font-medium transition-colors cursor-pointer ${
                 e2eEncrypted 
                   ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-300" 
-                  : "bg-white/[0.04] border-white/10 text-white/60 hover:text-white"
+                  : "bg-white/4 border-white/10 text-white/60 hover:text-white"
               }`}
               title="Click to configure E2EE Encryption"
             >
@@ -573,7 +612,7 @@ export default function SessionPage({ params }: { params: Promise<{ sessionId: s
                   )}
                 </div>
               ) : isReadOnlySession ? (
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-white/[0.04] border border-white/10 text-white/50 font-sans text-xs rounded-full font-medium">
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-white/4 border border-white/10 text-white/50 font-sans text-xs rounded-full font-medium">
                   Read-Only
                 </span>
               ) : (
@@ -596,7 +635,7 @@ export default function SessionPage({ params }: { params: Promise<{ sessionId: s
             {/* Audit Log Drawer Trigger */}
             <button
               onClick={() => setIsLogDrawerOpen(true)}
-              className="p-1.5 rounded-md text-white/60 hover:text-white hover:bg-white/[0.08] transition-colors cursor-pointer relative"
+              className="p-1.5 rounded-md text-white/60 hover:text-white hover:bg-white/8 transition-colors cursor-pointer relative"
               title="View Command Audit Log"
             >
               <DownloadIcon className="w-4 h-4 rotate-180" />
@@ -605,7 +644,7 @@ export default function SessionPage({ params }: { params: Promise<{ sessionId: s
             {/* Settings Modal Trigger */}
             <button
               onClick={() => setIsSettingsOpen(true)}
-              className="p-1.5 rounded-md text-white/60 hover:text-white hover:bg-white/[0.08] transition-colors cursor-pointer"
+              className="p-1.5 rounded-md text-white/60 hover:text-white hover:bg-white/8 transition-colors cursor-pointer"
               title="Session Settings"
             >
               <GearIcon className="w-4 h-4" />
@@ -620,7 +659,7 @@ export default function SessionPage({ params }: { params: Promise<{ sessionId: s
       <main className="w-full flex-1 flex flex-col md:flex-row overflow-hidden">
         
         {/* Terminal Area with Floating Action Toolbar */}
-        <div className="flex-1 h-full min-h-[350px] bg-[#030303] flex flex-col relative overflow-hidden">
+        <div className="flex-1 h-full min-h-87.5 bg-bg-dark flex flex-col relative overflow-hidden">
           {/* Quick Action Toolbar */}
           <TerminalToolbar
             hasControl={hasControl}
@@ -642,7 +681,7 @@ export default function SessionPage({ params }: { params: Promise<{ sessionId: s
         </div>
 
         {/* Sidebar Panel for active users & host controls */}
-        <aside className="w-full md:w-64 border-t md:border-t-0 md:border-l border-white/[0.08] bg-[#070709] flex flex-col p-5 space-y-6 shrink-0 select-none overflow-y-auto font-sans">
+        <aside className="w-full md:w-64 border-t md:border-t-0 md:border-l border-white/8 bg-[#070709] flex flex-col p-5 space-y-6 shrink-0 select-none overflow-y-auto font-sans">
           
           <div className="space-y-4">
             <div className="flex items-center justify-between">
@@ -655,7 +694,7 @@ export default function SessionPage({ params }: { params: Promise<{ sessionId: s
             
             <div className="space-y-2">
               {/* Host is always present */}
-              <div className="flex items-center justify-between font-sans text-xs py-1.5 px-2 rounded-lg bg-white/[0.02] border border-white/[0.04]">
+              <div className="flex items-center justify-between font-sans text-xs py-1.5 px-2 rounded-lg bg-white/2 border border-white/4">
                 <span className="text-white font-medium flex items-center gap-2">
                   <span className="w-2 h-2 rounded-full bg-white/80" />
                   Host CLI
@@ -667,7 +706,7 @@ export default function SessionPage({ params }: { params: Promise<{ sessionId: s
 
               {/* Connected clients */}
               {collaborators.map((c) => (
-                <div key={c.id} className="flex items-center justify-between font-sans text-xs py-1.5 px-2 rounded-lg hover:bg-white/[0.04] transition-colors">
+                <div key={c.id} className="flex items-center justify-between font-sans text-xs py-1.5 px-2 rounded-lg hover:bg-white/4 transition-colors">
                   <span className={`flex items-center gap-2 ${
                     c.id === clientId ? "text-white font-semibold" : "text-white/70"
                   }`}>
@@ -704,14 +743,14 @@ export default function SessionPage({ params }: { params: Promise<{ sessionId: s
             </div>
           </div>
 
-          <div className="border-t border-white/[0.08] pt-6 space-y-4">
+          <div className="border-t border-white/8 pt-6 space-y-4">
             <span className="text-xs font-sans font-semibold tracking-tight text-white/40 uppercase">Host Relay Status</span>
             <div className="space-y-2 text-xs font-sans text-white/60">
-              <div className="flex justify-between py-1 border-b border-white/[0.04]">
+              <div className="flex justify-between py-1 border-b border-white/4">
                 <span>Relay Engine:</span>
                 <span className="text-white font-medium">Express / WS</span>
               </div>
-              <div className="flex justify-between py-1 border-b border-white/[0.04]">
+              <div className="flex justify-between py-1 border-b border-white/4">
                 <span>Encryption:</span>
                 <span className="text-emerald-400 font-medium">AES-256</span>
               </div>

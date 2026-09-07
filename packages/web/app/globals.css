@@ -1,4 +1,11 @@
+@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&display=swap');
 @import "tailwindcss";
+
+.font-fira,
+.font-fira * {
+  font-family: 'Fira Code', monospace !important;
+  font-feature-settings: "calt" 1;
+}
 
 @theme {
   --color-bg-dark: #030303;
