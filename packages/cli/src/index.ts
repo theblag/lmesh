@@ -46,6 +46,13 @@ program
   .option("-w, --password <string>", "Password to protect the session")
   .option("-r, --readonly", "Make the session read-only (collaborators cannot request control)")
   .action((options) => {
+    if(process.env.LMESH_SESSION){
+      process.stderr.write(
+        "\r\n\x1b[31m[lmesh] Error: You are already inside an active lmesh session.\x1b[0m\r\n" +
+        "\x1b[90mNested session chaining is not allowed.\x1b[0m\r\n\r\n"
+      );
+      process.exit(1);
+    }
     const userConfig = readConfig();
 
     // Enforce login requirement
@@ -107,13 +114,13 @@ program
             for (const collab of collaborators) {
               const exists = currentCollaborators.some((c) => c.id === collab.id);
               if (!exists) {
-                notifications.push(`\x1b[36m[lmesh] ● ${collab.name} joined \x1b[90m(Press Enter to continue)\x1b[0m`);
+                notifications.push(`\x1b[36m[lmesh] ● ${collab.name} joined\x1b[0m`);
               }
             }
             for (const oldCollab of currentCollaborators) {
               const exists = collaborators.some((c: any) => c.id === oldCollab.id);
               if (!exists) {
-                notifications.push(`\x1b[36m[lmesh] ● ${oldCollab.name} left \x1b[90m(Press Enter to continue)\x1b[0m`);
+                notifications.push(`\x1b[36m[lmesh] ● ${oldCollab.name} left\x1b[0m`);
               }
             }
             currentCollaborators = collaborators;
@@ -121,6 +128,12 @@ program
             if (notifications.length > 0) {
               const msg = notifications.join("\r\n");
               process.stderr.write(`\r\n${msg}\r\n`);
+              // Automatically refresh the shell prompt on a clean new line after any resize settling
+              setTimeout(() => {
+                if (ptySession) {
+                  ptySession.write("\r");
+                }
+              }, 350);
             }
             break;
           }
@@ -222,9 +235,9 @@ program
         if (key === "\x13") {
           isHostSafetyMode = !isHostSafetyMode;
           if (isHostSafetyMode) {
-            process.stderr.write("\r\n\x1b[33m[lmesh] 🔒 Safety Mode: ON (Commands will be redacted in audit logs)\x1b[0m\r\n");
+            process.stderr.write("\r\n\x1b[33m[lmesh] Safety Mode: ON (Commands will be redacted in audit logs)\x1b[0m\r\n");
           } else {
-            process.stderr.write("\r\n\x1b[32m[lmesh] 🔓 Safety Mode: OFF (Normal audit logging)\x1b[0m\r\n");
+            process.stderr.write("\r\n\x1b[32m[lmesh] Safety Mode: OFF (Normal audit logging)\x1b[0m\r\n");
           }
           return;
         }

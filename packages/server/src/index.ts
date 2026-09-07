@@ -22,6 +22,7 @@ const wss = new WebSocketServer({ server });
 const store = new MemorySessionStore();
 const commandBuffers = new Map<string, string>();
 const PORT = process.env.PORT || 3001;
+const SERVER_INSTANCE_ID = crypto.randomUUID();
 
 // --- Redis Pub/Sub Message Listener ---
 if (subClient) {
@@ -29,7 +30,10 @@ if (subClient) {
     if (channel.startsWith("lmesh:session:")) {
       const sessionId = channel.replace("lmesh:session:", "");
       try {
-        const { message, excludeClientId } = JSON.parse(messageStr);
+        const { message, excludeClientId, originServerId } = JSON.parse(messageStr);
+        // Prevent echo: if this server published the message, it already sent it to local clients!
+        if (originServerId === SERVER_INSTANCE_ID) return;
+
         const session = await store.getSession(sessionId);
         if (session) {
           const payloadStr = JSON.stringify(message);
@@ -89,7 +93,7 @@ async function broadcastToSession(sessionId: string, message: MessageEnvelope, e
     }
   }
   if (pubClient && isRedisConnected) {
-    pubClient.publish(`lmesh:session:${sessionId}`, JSON.stringify({ message, excludeClientId })).catch(() => {});
+    pubClient.publish(`lmesh:session:${sessionId}`, JSON.stringify({ message, excludeClientId, originServerId: SERVER_INSTANCE_ID })).catch(() => {});
   }
 }
 

@@ -64,12 +64,12 @@ export function TerminalToolbar({
   ];
 
   return (
-    <div className="w-full bg-[#09090b]/80 backdrop-blur-md border-b border-white/[0.08] px-4 py-2 flex flex-wrap items-center justify-between gap-3 text-xs font-sans select-none transition-colors duration-200">
+    <div className="w-full bg-[#09090b]/80 backdrop-blur-md border-b border-white/8 px-4 py-2 flex flex-wrap items-center justify-between gap-3 text-xs font-sans select-none transition-colors duration-200">
       {/* Left side: Quick Key Shortcuts */}
       <div className="flex items-center gap-2 flex-wrap">
         <button
           onClick={() => setShowQuickKeys(!showQuickKeys)}
-          className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 text-white/70 hover:text-white transition-all cursor-pointer shadow-xs"
+          className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-white/4 hover:bg-white/8 border border-white/10 text-white/70 hover:text-white transition-all cursor-pointer shadow-xs"
           title="Toggle Quick Key Bar"
         >
           <KeyboardIcon className="w-3.5 h-3.5 text-white/60" />
@@ -82,7 +82,7 @@ export function TerminalToolbar({
           className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md border text-xs font-sans transition-all cursor-pointer shadow-xs ${
             safetyMode
               ? "bg-amber-500/15 border-amber-500/40 text-amber-300 shadow-[0_0_10px_rgba(245,158,11,0.2)]"
-              : "bg-white/[0.04] hover:bg-white/[0.08] border-white/10 text-white/70 hover:text-white"
+              : "bg-white/4 hover:bg-white/8 border-white/10 text-white/70 hover:text-white"
           }`}
           title={
             safetyMode
@@ -112,7 +112,7 @@ export function TerminalToolbar({
                 onClick={() => onSendKey?.(key.code)}
                 disabled={!hasControl}
                 title={key.title}
-                className="px-2.5 py-1 rounded-md bg-black/40 hover:bg-white/[0.08] border border-white/10 text-white/90 hover:text-white active:scale-95 transition-all disabled:opacity-25 disabled:pointer-events-none cursor-pointer text-xs font-mono font-medium shadow-xs"
+                className="px-2.5 py-1 rounded-md bg-black/40 hover:bg-white/8 border border-white/10 text-white/90 hover:text-white active:scale-95 transition-all disabled:opacity-25 disabled:pointer-events-none cursor-pointer text-xs font-mono font-medium shadow-xs"
               >
                 <kbd className="font-mono text-[11px] tracking-tight">{key.label}</kbd>
               </button>
@@ -127,35 +127,35 @@ export function TerminalToolbar({
         <div className="flex items-center gap-1 border-r border-white/10 pr-3">
           <button
             onClick={onZoomOut}
-            className="p-1.5 rounded-md hover:bg-white/[0.08] text-white/60 hover:text-white transition-colors cursor-pointer"
+            className="p-1.5 rounded-md hover:bg-white/8 text-white/60 hover:text-white transition-colors cursor-pointer"
             title="Decrease Font Size"
           >
             <MinusIcon className="w-3.5 h-3.5" />
           </button>
           <button
             onClick={onZoomIn}
-            className="p-1.5 rounded-md hover:bg-white/[0.08] text-white/60 hover:text-white transition-colors cursor-pointer"
+            className="p-1.5 rounded-md hover:bg-white/8 text-white/60 hover:text-white transition-colors cursor-pointer"
             title="Increase Font Size"
           >
             <PlusIcon className="w-3.5 h-3.5" />
           </button>
           <button
             onClick={onClearTerminal}
-            className="p-1.5 rounded-md hover:bg-white/[0.08] text-white/60 hover:text-white transition-colors cursor-pointer ml-1"
+            className="p-1.5 rounded-md hover:bg-white/8 text-white/60 hover:text-white transition-colors cursor-pointer ml-1"
             title="Clear Terminal Display"
           >
             <TrashIcon className="w-3.5 h-3.5" />
           </button>
           <button
             onClick={handleCopy}
-            className="p-1.5 rounded-md hover:bg-white/[0.08] text-white/60 hover:text-white transition-colors cursor-pointer"
+            className="p-1.5 rounded-md hover:bg-white/8 text-white/60 hover:text-white transition-colors cursor-pointer"
             title="Copy Terminal Selection"
           >
             {copied ? <CheckIcon className="w-3.5 h-3.5 text-emerald-400" /> : <CopyIcon className="w-3.5 h-3.5" />}
           </button>
           <button
             onClick={onToggleFullscreen}
-            className="p-1.5 rounded-md hover:bg-white/[0.08] text-white/60 hover:text-white transition-colors cursor-pointer"
+            className="p-1.5 rounded-md hover:bg-white/8 text-white/60 hover:text-white transition-colors cursor-pointer"
             title="Toggle Fullscreen View"
           >
             <DesktopIcon className="w-3.5 h-3.5" />
@@ -173,7 +173,7 @@ export function TerminalToolbar({
               Release Control
             </button>
           ) : isReadOnly ? (
-            <span className="px-3 py-1 rounded-md bg-white/[0.04] border border-white/10 text-white/50 text-xs font-sans font-medium tracking-tight">
+            <span className="px-3 py-1 rounded-md bg-white/4 border border-white/10 text-white/50 text-xs font-sans font-medium tracking-tight">
               Read-Only
             </span>
           ) : (

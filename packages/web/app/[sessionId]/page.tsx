@@ -293,10 +293,6 @@ export default function SessionPage({ params }: { params: Promise<{ sessionId: s
             if (role === "host") {
               setIsHost(true);
             }
-            if (termRef.current) {
-              termRef.current.writeln(`\x1b[37mConnected to session: ${sessionId}\x1b[0m`);
-              termRef.current.writeln(`\x1b[37mYou joined as: ${role.toUpperCase()}\x1b[0m\r\n`);
-            }
             break;
           }
 
@@ -371,13 +367,6 @@ export default function SessionPage({ params }: { params: Promise<{ sessionId: s
     if (clientId && controlHolderId) {
       const activeControl = clientId === controlHolderId;
       setHasControl(activeControl);
-      if (termRef.current) {
-        if (activeControl) {
-          termRef.current.writeln("\r\n\x1b[32m[LMESH] Keyboard control granted. You can type now.\x1b[0m");
-        } else {
-          termRef.current.writeln("\r\n\x1b[33m[LMESH] Keyboard control revoked. Read-only view.\x1b[0m");
-        }
-      }
     } else {
       setHasControl(false);
     }
@@ -396,9 +385,6 @@ export default function SessionPage({ params }: { params: Promise<{ sessionId: s
         type: "control_request",
         payload: {}
       }));
-      if (termRef.current) {
-        termRef.current.writeln("\r\n\x1b[37m[LMESH] Control request sent to host...\x1b[0m");
-      }
     }
   };
 
@@ -513,7 +499,6 @@ export default function SessionPage({ params }: { params: Promise<{ sessionId: s
                 <div className="space-y-2">
                   <label htmlFor="password-input" className="block text-xs font-sans font-medium text-white/70 items-center justify-between">
                     <span>Session Password</span>
-                    <span className="text-[10px] text-amber-400 font-medium">(Required)</span>
                   </label>
                   <input
                     id="password-input"

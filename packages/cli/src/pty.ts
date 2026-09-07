@@ -23,7 +23,10 @@ export function spawnPty(
     cols: initialCols,
     rows: initialRows,
     cwd: process.cwd(),
-    env: process.env as Record<string, string>,
+    env: {
+      ...process.env,
+      LMESH_SESSION: '1',
+    } as Record<string, string>,
   });
 
   // Listen for terminal output and send it back via callback
