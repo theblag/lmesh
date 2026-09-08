@@ -12,6 +12,7 @@ import {
   PersonIcon,
   DesktopIcon
 } from "@radix-ui/react-icons";
+import { SERVER_URL } from "../lib/config";
 
 interface UserProfile {
   id?: string;
@@ -32,7 +33,7 @@ export default function LoginPage() {
       const savedToken = localStorage.getItem("lmesh_auth_token");
       if (savedToken) {
         setAuthToken(savedToken);
-        fetch("http://localhost:3001/api/auth/me", {
+        fetch(`${SERVER_URL}/api/auth/me`, {
           headers: {
             Authorization: `Bearer ${savedToken}`
           }
@@ -174,7 +175,7 @@ export default function LoginPage() {
                 
                 {/* Sign in with GitHub primary button */}
                 <a
-                  href="http://localhost:3001/api/auth/github"
+                  href={`${SERVER_URL}/api/auth/github`}
                   className="w-full py-3.5 px-5 rounded-xl bg-(--btn-bg) text-(--btn-fg) hover:opacity-90 font-semibold text-sm flex items-center justify-center gap-3 transition-opacity cursor-pointer shadow-xs"
                 >
                   <GitHubLogoIcon className="w-5 h-5" />

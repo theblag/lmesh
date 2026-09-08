@@ -18,6 +18,7 @@ import {
 } from "@radix-ui/react-icons";
 import { mockDb, RoomSession } from "../lib/mockDb";
 import { cleanAnsi } from "../lib/ansi";
+import { SERVER_URL } from "../lib/config";
 
 interface HostDashboardProps {
   userProfile?: {
@@ -57,7 +58,7 @@ export function HostDashboard({ userProfile, authToken, stats, isLoading: isProf
     setFetchedLogs([]);
     if (authToken) {
       setIsLogsLoading(true);
-      fetch(`http://localhost:3001/api/dashboard/sessions/${session.sessionId}/logs`, {
+      fetch(`${SERVER_URL}/api/dashboard/sessions/${session.sessionId}/logs`, {
         headers: {
           Authorization: `Bearer ${authToken}`
         }
@@ -97,7 +98,7 @@ export function HostDashboard({ userProfile, authToken, stats, isLoading: isProf
   useEffect(() => {
     if (authToken) {
       setIsSessionsLoading(true);
-      fetch("http://localhost:3001/api/dashboard/sessions", {
+      fetch(`${SERVER_URL}/api/dashboard/sessions`, {
         headers: {
           Authorization: `Bearer ${authToken}`
         }
@@ -182,7 +183,7 @@ export function HostDashboard({ userProfile, authToken, stats, isLoading: isProf
       setSelectedSessionLogs(null);
     }
     if (authToken) {
-      fetch(`http://localhost:3001/api/dashboard/sessions/${session.sessionId}`, {
+      fetch(`${SERVER_URL}/api/dashboard/sessions/${session.sessionId}`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${authToken}`
@@ -196,7 +197,7 @@ export function HostDashboard({ userProfile, authToken, stats, isLoading: isProf
       prev.map((s) => (s.id === session.id ? { ...s, status: status === "active" ? "active" : "completed" } : s))
     );
     if (authToken && status === "completed") {
-      fetch(`http://localhost:3001/api/dashboard/sessions/${session.sessionId}/end`, {
+      fetch(`${SERVER_URL}/api/dashboard/sessions/${session.sessionId}/end`, {
         method: "PATCH",
         headers: {
           Authorization: `Bearer ${authToken}`

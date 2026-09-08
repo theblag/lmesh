@@ -27,7 +27,7 @@ export function ShareSessionModal({
 
   const sessionUrl = typeof window !== "undefined" 
     ? `${window.location.origin}/${sessionId}` 
-    : `http://localhost:3000/${sessionId}`;
+    : (process.env.NEXT_PUBLIC_APP_URL || "https://lmesh.vercel.app") + `/${sessionId}`;
   
   const cliCommand = `lmesh join ${sessionId}`;
 

@@ -11,6 +11,7 @@ import {
   ArrowLeftIcon,
   PersonIcon
 } from "@radix-ui/react-icons";
+import { SERVER_URL } from "../lib/config";
 
 interface UserProfile {
   id?: string;
@@ -49,7 +50,7 @@ export default function DashboardPage() {
 
   useEffect(() => {
     if (authToken) {
-      fetch("http://localhost:3001/api/dashboard/stats", {
+      fetch(`${SERVER_URL}/api/dashboard/stats`, {
         headers: {
           Authorization: `Bearer ${authToken}`
         }

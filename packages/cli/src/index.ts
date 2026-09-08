@@ -41,8 +41,9 @@ program
 program
   .command("share")
   .description("Share your local terminal session")
-  .option("-p, --port <number>", "Relay server port", "3001")
-  .option("-h, --host <string>", "Relay server host", "localhost")
+  .option("-p, --port <number>", "Relay server port", process.env.LMESH_RELAY_PORT || "3001")
+  .option("-h, --host <string>", "Relay server host", process.env.LMESH_RELAY_HOST || "localhost")
+  .option("-u, --url <string>", "Relay server WebSocket URL (e.g. wss://lmesh-relay.onrender.com)")
   .option("-w, --password <string>", "Password to protect the session")
   .option("-r, --readonly", "Make the session read-only (collaborators cannot request control)")
   .action((options) => {
@@ -62,7 +63,22 @@ program
       process.exit(1);
     }
 
-    const wsUrl = `ws://${options.host}:${options.port}`;
+    let wsUrl: string;
+    if (options.url) {
+      wsUrl = options.url;
+    } else if (process.env.LMESH_RELAY_URL) {
+      wsUrl = process.env.LMESH_RELAY_URL;
+    } else if (process.env.LMESH_SERVER_URL) {
+      const sUrl = process.env.LMESH_SERVER_URL;
+      wsUrl = sUrl.startsWith("https://")
+        ? sUrl.replace(/^https:\/\//, "wss://")
+        : sUrl.startsWith("http://")
+        ? sUrl.replace(/^http:\/\//, "ws://")
+        : sUrl;
+    } else {
+      wsUrl = `ws://${options.host}:${options.port}`;
+    }
+
     console.log(`Authenticated as \x1b[36m@${userConfig.user.username}\x1b[0m`);
     console.log(`Connecting to relay server at ${wsUrl}...`);
 
@@ -99,10 +115,15 @@ program
         switch (message.type) {
           case "session_created": {
             const { sessionId } = message.payload;
+            const webBaseUrl =
+              process.env.LMESH_WEB_URL ||
+              (wsUrl.includes("localhost") || wsUrl.includes("127.0.0.1")
+                ? "http://localhost:3000"
+                : "https://lmesh.vercel.app");
             console.log(`Session created successfully!`);
             console.log(`Host: @${userConfig.user.username}`);
             console.log(`Share this link with collaborators:`);
-            console.log(`http://localhost:3000/${sessionId}`);
+            console.log(`${webBaseUrl}/${sessionId}`);
             console.log(`\x1b[90m(Type 'exit' or press Ctrl+] to end session • Ctrl+S for Safety Mode)\x1b[0m\n`);
             startSession(ws);
             break;

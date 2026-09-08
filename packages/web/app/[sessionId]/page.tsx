@@ -20,6 +20,7 @@ import { CommandLogDrawer, LogEntry } from "../components/CommandLogDrawer";
 import { CommandApprovalModal, PendingRequest } from "../components/CommandApprovalModal";
 import { ShareSessionModal } from "../components/ShareSessionModal";
 import NotFound from "../not-found";
+import { SERVER_URL, getWsUrl } from "../lib/config";
 
 interface Collaborator {
   id: string;
@@ -50,7 +51,7 @@ export default function SessionPage({ params }: { params: Promise<{ sessionId: s
     let isMounted = true;
     setSessionStatus("checking");
 
-    const serverUrl = process.env.NEXT_PUBLIC_SERVER_URL || "http://localhost:3001";
+    const serverUrl = SERVER_URL;
     fetch(`${serverUrl}/api/sessions/${sessionId}/info`)
       .then(async (res) => {
         if (!isMounted) return;
@@ -154,7 +155,7 @@ export default function SessionPage({ params }: { params: Promise<{ sessionId: s
     let active = true;
     let fitAddon: any;
 
-    const wsUrl = `ws://localhost:3001`;
+    const wsUrl = getWsUrl();
     setSocketStatus("connecting");
     
     const socket = new WebSocket(wsUrl);

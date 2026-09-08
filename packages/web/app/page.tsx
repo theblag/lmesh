@@ -17,6 +17,7 @@ import {
   GitHubLogoIcon,
   PersonIcon
 } from "@radix-ui/react-icons";
+import { SERVER_URL } from "./lib/config";
 
 interface UserProfile {
   id?: string;
@@ -55,7 +56,7 @@ export default function Home() {
   useEffect(() => {
     // 2. Fetch authenticated profile if token is available
     if (authToken) {
-      fetch("http://localhost:3001/api/auth/me", {
+      fetch(`${SERVER_URL}/api/auth/me`, {
         headers: {
           Authorization: `Bearer ${authToken}`
         }
