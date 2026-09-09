@@ -113,6 +113,12 @@ export default function Home() {
           </div>
           <nav className="flex items-center gap-4 sm:gap-6">
             <Link
+              href="/docs"
+              className="text-xs text-(--text-muted) hover:text-(--foreground) transition-colors font-sans tracking-tight"
+            >
+              Docs
+            </Link>
+            <Link
               href="/dashboard"
               className="text-xs text-(--text-muted) hover:text-(--foreground) transition-colors font-sans tracking-tight"
             >

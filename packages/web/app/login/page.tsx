@@ -9,6 +9,8 @@ import {
   ArrowLeftIcon,
   ArrowRightIcon,
   CheckCircledIcon,
+  CrossCircledIcon,
+  UpdateIcon,
   PersonIcon,
   DesktopIcon
 } from "@radix-ui/react-icons";
@@ -25,7 +27,11 @@ export default function LoginPage() {
   const [authToken, setAuthToken] = useState<string | null>(null);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [deviceCode, setDeviceCode] = useState("");
-  const [deviceStatus, setDeviceStatus] = useState<string | null>(null);
+  const [deviceStatus, setDeviceStatus] = useState<{
+    type: "loading" | "success" | "error";
+    message: string;
+  } | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -65,14 +71,43 @@ export default function LoginPage() {
     setUserProfile(null);
   };
 
-  const handleDeviceSubmit = (e: React.FormEvent) => {
+  const handleDeviceSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!deviceCode.trim()) return;
+    const code = deviceCode.trim().toUpperCase();
+    if (!code) return;
 
-    setDeviceStatus("Verifying code...");
-    setTimeout(() => {
-      setDeviceStatus("Device authorized! You can now return to your CLI session.");
-    }, 1000);
+    setDeviceStatus({ type: "loading", message: "Verifying device code with server..." });
+    setIsSubmitting(true);
+
+    try {
+      const res = await fetch(`${SERVER_URL}/api/auth/device/verify`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ user_code: code }),
+      });
+
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        setDeviceStatus({
+          type: "error",
+          message: data.error || "Unable to authorize device. This is on us - please try again in a few moments."
+        });
+        return;
+      }
+
+      setDeviceStatus({
+        type: "success",
+        message: "Device authorized! You can now return to your CLI session."
+      });
+    } catch (err: any) {
+      // Network error when server is offline or connection refused
+      setDeviceStatus({
+        type: "error",
+        message: "Unable to reach server. This is on us - please try again in a few moments."
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -203,23 +238,50 @@ export default function LoginPage() {
                       type="text"
                       placeholder="ABCD-1234"
                       value={deviceCode}
-                      onChange={(e) => setDeviceCode(e.target.value.toUpperCase())}
+                      onChange={(e) => {
+                        setDeviceCode(e.target.value.toUpperCase());
+                        if (deviceStatus) setDeviceStatus(null);
+                      }}
+                      disabled={isSubmitting}
                       className="flex-1 bg-(--card-bg) border border-(--border-color) focus:border-(--foreground) rounded-xl px-4 py-3 text-xs text-(--foreground) placeholder:text-(--text-subtle) focus:outline-none transition-colors tracking-widest uppercase font-mono"
                     />
                     <button
                       type="submit"
-                      disabled={!deviceCode.trim()}
-                      className="bg-(--btn-bg) text-(--btn-fg) hover:opacity-90 disabled:opacity-50 px-4 py-3 rounded-xl text-xs font-semibold transition-opacity cursor-pointer shrink-0"
+                      disabled={!deviceCode.trim() || isSubmitting}
+                      className="bg-(--btn-bg) text-(--btn-fg) hover:opacity-90 disabled:opacity-50 px-4 py-3 rounded-xl text-xs font-semibold transition-opacity cursor-pointer shrink-0 flex items-center gap-1.5"
                     >
-                      Authorize
+                      {isSubmitting ? (
+                        <>
+                          <UpdateIcon className="w-3.5 h-3.5 animate-spin" />
+                          <span>Verifying...</span>
+                        </>
+                      ) : (
+                        <span>Authorize</span>
+                      )}
                     </button>
                   </div>
 
                   {deviceStatus && (
-                    <p className="text-xs text-emerald-400 font-medium flex items-center gap-1.5 pt-1">
-                      <CheckCircledIcon className="w-3.5 h-3.5 text-emerald-400" />
-                      <span>{deviceStatus}</span>
-                    </p>
+                    <div
+                      className={`text-xs font-medium flex items-start gap-1.5 pt-1.5 leading-relaxed ${
+                        deviceStatus.type === "success"
+                          ? "text-emerald-400"
+                          : deviceStatus.type === "loading"
+                          ? "text-(--text-muted)"
+                          : "text-rose-400"
+                      }`}
+                    >
+                      {deviceStatus.type === "success" && (
+                        <CheckCircledIcon className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                      )}
+                      {deviceStatus.type === "loading" && (
+                        <UpdateIcon className="w-4 h-4 animate-spin text-(--text-muted) shrink-0 mt-0.5" />
+                      )}
+                      {deviceStatus.type === "error" && (
+                        <CrossCircledIcon className="w-4 h-4 text-rose-400 shrink-0 mt-0.5" />
+                      )}
+                      <span>{deviceStatus.message}</span>
+                    </div>
                   )}
                 </form>
 
@@ -234,6 +296,10 @@ export default function LoginPage() {
             <div className="flex items-center gap-4">
               <Link href="/" className="hover:text-(--foreground) transition-colors">
                 Home
+              </Link>
+              <span>•</span>
+              <Link href="/docs" className="hover:text-(--foreground) transition-colors">
+                Docs
               </Link>
               <span>•</span>
               <Link href="/dashboard" className="hover:text-(--foreground) transition-colors">
@@ -255,13 +321,11 @@ export default function LoginPage() {
           />
 
           {/* Gradient Overlay for Text Readability */}
-          <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-transparent to-black/75 pointer-events-none" />
+          <div className="absolute inset-0 bg-linear-to-b from-black/50 via-transparent to-black/75 pointer-events-none" />
 
           {/* Top Tag inside Right Panel */}
           <div className="z-10 flex items-center justify-between w-full">
-            <span className="text-[10px] font-mono uppercase tracking-widest text-white/80 bg-black/40 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-white/10">
-              LMESH Engine
-            </span>
+            
           </div>
 
           {/* Bottom Caption inside Right Panel */}

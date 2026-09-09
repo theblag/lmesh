@@ -166,6 +166,14 @@ export default function DashboardPage() {
           <div className="flex items-center gap-4 text-[11px]">
             <span>© {new Date().getFullYear()} LMESH</span>
             <span>•</span>
+            <Link href="/docs" className="hover:text-(--foreground) transition-colors">
+              Docs
+            </Link>
+            <span>•</span>
+            <Link href="/" className="hover:text-(--foreground) transition-colors">
+              Home
+            </Link>
+            <span>•</span>
             <a
               href="https://github.com"
               target="_blank"
@@ -174,10 +182,6 @@ export default function DashboardPage() {
             >
               GitHub
             </a>
-            <span>•</span>
-            <Link href="/" className="hover:text-(--foreground) transition-colors">
-              Home
-            </Link>
           </div>
         </footer>
       </div>

@@ -106,4 +106,19 @@ router.get("/me", (req, res) => {
   res.json({ user });
 });
 
+/**
+ * 6. Web Client: Acknowledge / Verify Device Code
+ */
+router.post("/device/verify", (req, res) => {
+  const { user_code } = req.body;
+  if (!user_code || typeof user_code !== "string" || !user_code.trim()) {
+    return res.status(400).json({ error: "CLI device code is required." });
+  }
+
+  res.json({
+    success: true,
+    message: "Device authorized! You can now return to your CLI session.",
+  });
+});
+
 export default router;

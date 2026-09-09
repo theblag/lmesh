@@ -1,6 +1,20 @@
 @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&display=swap');
 @import "tailwindcss";
 
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 5rem;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
 .font-fira,
 .font-fira * {
   font-family: 'Fira Code', monospace !important;
@@ -153,4 +167,24 @@ footer ::selection {
 [data-theme="light"] footer ::selection {
   background-color: #ffffff !important;
   color: #000000 !important;
+}
+
+/* Dark terminal container selection: ensure selected text is crisp white in all themes */
+.bg-\[\#0c0d12\] ::selection,
+[data-theme="light"] .bg-\[\#0c0d12\] ::selection {
+  background-color: rgba(255, 255, 255, 0.25) !important;
+  color: #ffffff !important;
+}
+
+/* Invisible scrollbar while preserving full scroll functionality */
+.docs-scrollbar,
+.no-scrollbar {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+}
+.docs-scrollbar::-webkit-scrollbar,
+.no-scrollbar::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Edge */
+  width: 0;
+  height: 0;
 }

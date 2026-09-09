@@ -448,6 +448,7 @@ function NotFoundContent() {
           <p>© {new Date().getFullYear()} LMESH — Live Multi-user Execution Shell.</p>
           <div className="flex items-center gap-6">
             <Link href="/" className="text-(--text-muted) hover:text-(--foreground) transition-colors">Home</Link>
+            <Link href="/docs" className="text-(--text-muted) hover:text-(--foreground) transition-colors">Docs</Link>
             <Link href="/dashboard" className="text-(--text-muted) hover:text-(--foreground) transition-colors">Dashboard</Link>
             <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="text-(--text-muted) hover:text-(--foreground) transition-colors">GitHub</a>
           </div>

@@ -1,12 +1,22 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { GitHubLogoIcon, ArrowRightIcon, CheckIcon } from "@radix-ui/react-icons";
 
 export function Footer() {
   const [email, setEmail] = useState("");
   const [subscribed, setSubscribed] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const token = localStorage.getItem("lmesh_auth_token");
+      setIsLoggedIn(!!token);
+    }
+  }, []);
+
+  const dashboardHref = isLoggedIn ? "/dashboard" : "/login";
 
   const handleSubscribe = (e: React.FormEvent) => {
     e.preventDefault();
@@ -24,11 +34,20 @@ export function Footer() {
         {/* Top 3 Navigation Blocks */}
         <div className="grid grid-cols-1 md:grid-cols-3 border border-(--footer-border) divide-y md:divide-y-0 md:divide-x divide-(--footer-border) rounded-none overflow-hidden bg-(--footer-card-bg)">
           <Link
-            href="/dashboard"
-            className="p-10 md:p-14 min-h-[140px] md:min-h-[180px] text-center hover:bg-(--footer-card-hover) transition-colors group flex items-center justify-center"
+            href={dashboardHref}
+            className="px-4 py-8 md:py-12 min-h-[110px] md:min-h-[130px] text-center hover:bg-(--footer-card-hover) transition-colors group flex items-center justify-center"
           >
-            <span className="text-xl sm:text-2xl font-black uppercase tracking-tight text-(--footer-fg) group-hover:scale-105 transition-transform">
+            <span className="text-lg sm:text-xl md:text-2xl font-black uppercase tracking-tight text-(--footer-fg) group-hover:scale-105 transition-transform">
               DASHBOARD
+            </span>
+          </Link>
+
+          <Link
+            href="/docs"
+            className="px-4 py-8 md:py-12 min-h-[110px] md:min-h-[130px] text-center hover:bg-(--footer-card-hover) transition-colors group flex items-center justify-center"
+          >
+            <span className="text-lg sm:text-xl md:text-2xl font-black uppercase tracking-tight text-(--footer-fg) group-hover:scale-105 transition-transform">
+              DOCUMENTATION
             </span>
           </Link>
 
@@ -36,20 +55,9 @@ export function Footer() {
             href="https://github.com"
             target="_blank"
             rel="noopener noreferrer"
-            className="p-10 md:p-14 min-h-[140px] md:min-h-[180px] text-center hover:bg-(--footer-card-hover) transition-colors group flex items-center justify-center"
+            className="px-4 py-8 md:py-12 min-h-[110px] md:min-h-[130px] text-center hover:bg-(--footer-card-hover) transition-colors group flex items-center justify-center"
           >
-            <span className="text-xl sm:text-2xl font-black uppercase tracking-tight text-(--footer-fg) group-hover:scale-105 transition-transform">
-              DOCUMENTATION
-            </span>
-          </a>
-
-          <a
-            href="https://github.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="p-10 md:p-14 min-h-[140px] md:min-h-[180px] text-center hover:bg-(--footer-card-hover) transition-colors group flex items-center justify-center"
-          >
-            <span className="text-xl sm:text-2xl font-black uppercase tracking-tight text-(--footer-fg) group-hover:scale-105 transition-transform">
+            <span className="text-lg sm:text-xl md:text-2xl font-black uppercase tracking-tight text-(--footer-fg) group-hover:scale-105 transition-transform">
               GITHUB REPO
             </span>
           </a>
@@ -111,7 +119,10 @@ export function Footer() {
                   <Link href="/" className="hover:text-(--footer-fg) transition-colors">Home</Link>
                 </li>
                 <li>
-                  <Link href="/dashboard" className="hover:text-(--footer-fg) transition-colors">User Dashboard</Link>
+                  <Link href="/docs" className="hover:text-(--footer-fg) transition-colors">Documentation</Link>
+                </li>
+                <li>
+                  <Link href={dashboardHref} className="hover:text-(--footer-fg) transition-colors">User Dashboard</Link>
                 </li>
                 <li>
                   <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="hover:text-(--footer-fg) transition-colors">CLI Package</a>
@@ -129,7 +140,7 @@ export function Footer() {
               </h4>
               <ul className="space-y-2 text-(--footer-text-muted)">
                 <li>
-                  <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="hover:text-(--footer-fg) transition-colors">Documentation</a>
+                  <Link href="/docs" className="hover:text-(--footer-fg) transition-colors">Documentation</Link>
                 </li>
                 <li>
                   <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="hover:text-(--footer-fg) transition-colors">API Architecture</a>
@@ -169,7 +180,7 @@ export function Footer() {
 
         {/* Bottom Giant Hero Typography: LMESH */}
         <div className="pt-8 border-t border-(--footer-border) flex flex-col items-center justify-center overflow-hidden">
-          <h1 className="text-[18vw] sm:text-[17vw] md:text-[16vw] lg:text-[180px] font-black uppercase tracking-tighter leading-none text-(--footer-fg) text-center select-none w-full scale-y-105 pointer-events-none">
+          <h1 className="text-[18vw] sm:text-[16vw] md:text-[13vw] lg:text-[130px] xl:text-[160px] font-black uppercase tracking-tighter leading-none text-(--footer-fg) text-center select-none w-full scale-y-105 pointer-events-none">
             LMESH
           </h1>
 
@@ -177,9 +188,9 @@ export function Footer() {
           <div className="w-full pt-4 border-t border-(--footer-border-subtle) flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px] font-sans text-(--footer-text-muted)">
             <div className="flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-              <span>LMESH RELAY PROTOCOL // STABLE 1.0.0</span>
+              <span>LMESH RELAY PROTOCOL || STABLE 1.1.5</span>
             </div>
-            <span>© 2026 LMESH — ALL RIGHTS RESERVED</span>
+            <span>© 2026 LMESH - ALL RIGHTS RESERVED</span>
           </div>
         </div>
 
