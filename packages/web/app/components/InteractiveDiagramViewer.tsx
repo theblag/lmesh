@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect } from "react";
 import {
   ZoomInIcon,
   ZoomOutIcon,
@@ -94,7 +94,7 @@ export default function InteractiveDiagramViewer() {
             </button>
             <button
               onClick={() => sendAction("reset")}
-              className="px-2 py-1 text-[11px] font-mono text-[#8e93a0] hover:text-white hover:bg-[#1f2330] rounded transition-colors min-w-[50px] text-center"
+              className="px-2 py-1 text-[11px] font-mono text-[#8e93a0] hover:text-white hover:bg-[#1f2330] rounded transition-colors min-w-12.5 text-center"
               title="Reset zoom to 100%"
             >
               {zoomPercent}%
@@ -107,7 +107,7 @@ export default function InteractiveDiagramViewer() {
             >
               <ZoomInIcon className="w-3.5 h-3.5" />
             </button>
-            <div className="w-[1px] h-3.5 bg-[#232630] mx-0.5" />
+            <div className="w-px h-3.5 bg-[#232630] mx-0.5" />
             <button
               onClick={() => sendAction("reset")}
               className="p-1.5 rounded text-[#8e93a0] hover:text-white hover:bg-[#1f2330] transition-colors"

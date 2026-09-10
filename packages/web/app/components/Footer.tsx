@@ -1,4 +1,4 @@
-"use client";
+`use client`;
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
@@ -35,7 +35,7 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-3 border border-(--footer-border) divide-y md:divide-y-0 md:divide-x divide-(--footer-border) rounded-none overflow-hidden bg-(--footer-card-bg)">
           <Link
             href={dashboardHref}
-            className="px-4 py-8 md:py-12 min-h-[110px] md:min-h-[130px] text-center hover:bg-(--footer-card-hover) transition-colors group flex items-center justify-center"
+            className="px-4 py-8 md:py-12 min-h-27.5 md:min-h-32.5 text-center hover:bg-(--footer-card-hover) transition-colors group flex items-center justify-center"
           >
             <span className="text-lg sm:text-xl md:text-2xl font-black uppercase tracking-tight text-(--footer-fg) group-hover:scale-105 transition-transform">
               DASHBOARD
@@ -44,7 +44,7 @@ export function Footer() {
 
           <Link
             href="/docs"
-            className="px-4 py-8 md:py-12 min-h-[110px] md:min-h-[130px] text-center hover:bg-(--footer-card-hover) transition-colors group flex items-center justify-center"
+            className="px-4 py-8 md:py-12 min-h-27.5 md:min-h-32.5 text-center hover:bg-(--footer-card-hover) transition-colors group flex items-center justify-center"
           >
             <span className="text-lg sm:text-xl md:text-2xl font-black uppercase tracking-tight text-(--footer-fg) group-hover:scale-105 transition-transform">
               DOCUMENTATION
@@ -55,7 +55,7 @@ export function Footer() {
             href="https://github.com"
             target="_blank"
             rel="noopener noreferrer"
-            className="px-4 py-8 md:py-12 min-h-[110px] md:min-h-[130px] text-center hover:bg-(--footer-card-hover) transition-colors group flex items-center justify-center"
+            className="px-4 py-8 md:py-12 min-h-27.5 md:min-h-[130px] text-center hover:bg-(--footer-card-hover) transition-colors group flex items-center justify-center"
           >
             <span className="text-lg sm:text-xl md:text-2xl font-black uppercase tracking-tight text-(--footer-fg) group-hover:scale-105 transition-transform">
               GITHUB REPO
