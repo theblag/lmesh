@@ -11,6 +11,7 @@ import {
   Share2Icon,
   CubeIcon
 } from "@radix-ui/react-icons";
+import InteractiveDiagramViewer from "@/app/components/InteractiveDiagramViewer";
 
 export default function ArchitectureDocsPage() {
   const [copiedCmd, setCopiedCmd] = useState<string | null>(null);
@@ -34,7 +35,7 @@ export default function ArchitectureDocsPage() {
     <div className="w-full flex">
       {/* Main Content Area */}
       <main id="docs-content-container" className="flex-1 min-w-0 py-10 pb-24 font-sans">
-        
+
         {/* Breadcrumb */}
         <div className="flex items-center gap-2 text-xs font-mono text-(--text-subtle) uppercase tracking-wider mb-4">
           <Link href="/docs" className="hover:text-(--foreground) transition-colors">Docs</Link>
@@ -116,28 +117,7 @@ export default function ArchitectureDocsPage() {
             Data moves bidirectionally across persistent WebSocket connections with zero polling overhead:
           </p>
 
-          <div className="rounded-xl border border-[#232630] bg-[#0c0d12] overflow-hidden text-[#ededed] selection:bg-white/25 selection:text-white">
-            <div className="flex items-center justify-between border-b border-[#1f212a] px-4 py-2.5 bg-[#13151c] text-xs font-mono select-none">
-              <span className="text-[#8e93a0] text-[11px] font-medium">pipeline topology</span>
-            </div>
-            <div className="p-4 font-mono text-xs overflow-x-auto text-[#f1f1f1] leading-relaxed bg-[#0c0d12]">
-              <pre className="text-[#d1d5db]">
-{`[ Host Shell (ConPTY / POSIX PTY) ]
-               ▲
-               │ stdin / stdout (raw byte stream)
-               ▼
-[ LMESH CLI Daemon (node-pty + ws) ]
-               ▲
-               │ WebSocket (wss://) • TLS 1.3
-               ▼
-[ Relay Server (Express + ws cluster) ] <════> [ Redis Pub/Sub Broker ]
-               ▲                                      (Session state & sync)
-               │ WebSocket (wss://) • Binary multiplexing
-               ▼
-[ Remote Browser Viewport (xterm.js) ]`}
-              </pre>
-            </div>
-          </div>
+          <InteractiveDiagramViewer />
         </section>
 
         {/* WebSocket Wire Protocol */}
@@ -176,7 +156,7 @@ export default function ArchitectureDocsPage() {
             </div>
             <div className="p-4 font-mono text-xs overflow-x-auto text-[#f1f1f1] bg-[#0c0d12]">
               <pre className="text-[#a5b4fc]">
-{`{
+                {`{
   "type": "input" | "output" | "resize" | "grant_control" | "revoke_control" | "safety_mode",
   "sessionId": "x7k2m9p",
   "payload": "base64_or_utf8_string",

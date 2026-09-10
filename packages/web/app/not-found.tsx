@@ -249,13 +249,12 @@ function NotFoundContent() {
 
       {/* Header Bar matching landing page */}
       <header className="w-full max-w-5xl px-4 sm:px-8 h-16 flex items-center justify-between border-b border-(--border-subtle) z-10">
-        <Link href="/" className="flex items-center gap-2.5 group">
-          <img src="/lmesh-logo.png" alt="LMESH Logo" className="w-6 h-6 object-contain" />
-          <span className="font-mono text-sm tracking-widest uppercase font-semibold text-(--foreground)">lmesh</span>
+        <Link href="/" className="flex items-center group">
+          <img src="/lmesh-logo-favicon.png" alt="LMESH" className="h-8 sm:h-9 w-auto object-contain theme-logo" />
         </Link>
 
         <nav className="flex items-center gap-4 sm:gap-6">
-          
+
           <Link
             href="/dashboard"
             className="text-xs text-(--text-muted) hover:text-(--foreground) transition-colors font-sans tracking-tight"

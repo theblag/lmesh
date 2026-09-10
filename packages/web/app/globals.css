@@ -188,3 +188,14 @@ footer ::selection {
   width: 0;
   height: 0;
 }
+
+/* Logo color handling: original colors in light mode, inverted colors in dark mode */
+.theme-logo {
+  filter: invert(1);
+  transition: filter 0.2s ease;
+}
+
+[data-theme="light"] .theme-logo {
+  filter: invert(0);
+}
+

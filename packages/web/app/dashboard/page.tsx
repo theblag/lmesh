@@ -88,7 +88,7 @@ export default function DashboardPage() {
   return (
     <ThemeProvider>
       <div className="w-full min-h-screen bg-(--background) text-(--foreground) bg-grid-pattern relative flex flex-col items-center justify-between selection:bg-(--selection-bg) selection:text-(--selection-fg) overflow-x-hidden transition-colors duration-200">
-        
+
         {/* Top Glow Accent */}
         <div className="absolute top-[-10%] left-[50%] translate-x-[-50%] w-150 h-75 bg-(--glow-color) rounded-full blur-[120px] pointer-events-none" />
 
@@ -104,8 +104,9 @@ export default function DashboardPage() {
             </Link>
             <span className="text-(--border-color)">|</span>
             <div className="flex items-center gap-2">
-              <img src="/lmesh-logo.png" alt="LMESH Logo" className="w-5 h-5 object-contain" />
-              <span className="font-mono text-sm tracking-widest uppercase font-semibold text-(--foreground)">lmesh</span>
+              <Link href="/" className="flex items-center">
+                <img src="/lmesh-logo-favicon.png" alt="LMESH" className="h-8 sm:h-9 w-auto object-contain theme-logo" />
+              </Link>
               <span className="text-xs font-sans text-(--text-subtle) px-2 py-0.5 rounded bg-(--card-bg) border border-(--border-color)">
                 Dashboard
               </span>

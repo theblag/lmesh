@@ -114,10 +114,10 @@ export default function LoginPage() {
     <ThemeProvider>
       {/* Full-Page Split Layout (No container card, spans full screen width & height) */}
       <div className="w-full min-h-screen bg-(--background) text-(--foreground) grid grid-cols-1 md:grid-cols-12 overflow-x-hidden font-sans selection:bg-(--selection-bg) selection:text-(--selection-fg) transition-colors duration-200">
-        
+
         {/* LEFT COLUMN (Form Area - 7 cols on desktop) */}
         <div className="md:col-span-7 flex flex-col justify-between p-6 sm:p-10 md:p-14 z-10 min-h-screen bg-(--background)">
-          
+
           {/* Header Row */}
           <header className="flex items-center justify-between w-full">
             <div className="flex items-center gap-3">
@@ -129,10 +129,9 @@ export default function LoginPage() {
                 <span>Back to Home</span>
               </Link>
               <span className="text-(--border-color)">|</span>
-              <div className="flex items-center gap-2">
-                <img src="/lmesh-logo.png" alt="LMESH Logo" className="w-5 h-5 object-contain" />
-                <span className="font-mono text-sm tracking-widest uppercase font-semibold text-(--foreground)">lmesh</span>
-              </div>
+              <Link href="/" className="flex items-center">
+                <img src="/lmesh-logo-favicon.png" alt="LMESH" className="h-8 sm:h-9 w-auto object-contain theme-logo" />
+              </Link>
             </div>
 
             <ThemeToggle />
@@ -140,13 +139,13 @@ export default function LoginPage() {
 
           {/* Centered Sign-In Content (Matching Reference Image Layout) */}
           <main className="my-auto max-w-md w-full mx-auto space-y-8 py-8">
-            
+
             {/* Top Brand Logo Icon Badge */}
             <div className="flex flex-col items-center text-center space-y-3">
-              <div className="w-14 h-14 rounded-2xl bg-(--card-bg) border border-(--border-color) flex items-center justify-center shadow-xs p-2.5">
-                <img src="/lmesh-logo.png" alt="LMESH Logo" className="w-full h-full object-contain" />
+              <div className="w-16 h-16 rounded-2xl bg-(--card-bg) border border-(--border-color) flex items-center justify-center shadow-xs p-3">
+                <img src="/lmesh-logo-favicon.png" alt="LMESH" className="w-full h-full object-contain theme-logo" />
               </div>
-              
+
               <div className="space-y-1">
                 <h1 className="text-3xl font-bold tracking-tight text-(--foreground)">
                   Welcome back!
@@ -207,7 +206,7 @@ export default function LoginPage() {
             ) : (
               /* Unauthenticated Form Options */
               <div className="space-y-6">
-                
+
                 {/* Sign in with GitHub primary button */}
                 <a
                   href={`${SERVER_URL}/api/auth/github`}
@@ -263,13 +262,12 @@ export default function LoginPage() {
 
                   {deviceStatus && (
                     <div
-                      className={`text-xs font-medium flex items-start gap-1.5 pt-1.5 leading-relaxed ${
-                        deviceStatus.type === "success"
+                      className={`text-xs font-medium flex items-start gap-1.5 pt-1.5 leading-relaxed ${deviceStatus.type === "success"
                           ? "text-emerald-400"
                           : deviceStatus.type === "loading"
-                          ? "text-(--text-muted)"
-                          : "text-rose-400"
-                      }`}
+                            ? "text-(--text-muted)"
+                            : "text-rose-400"
+                        }`}
                     >
                       {deviceStatus.type === "success" && (
                         <CheckCircledIcon className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
@@ -312,7 +310,7 @@ export default function LoginPage() {
 
         {/* RIGHT COLUMN (Visual Panel - 5 cols on desktop, spans full height) */}
         <div className="hidden md:flex md:col-span-5 relative bg-(--card-bg) border-l border-(--border-color) flex-col justify-between p-8 overflow-hidden min-h-screen">
-          
+
           {/* Background Image filling the visual column */}
           <img
             src="/mesh_login_bg.png"
@@ -325,7 +323,7 @@ export default function LoginPage() {
 
           {/* Top Tag inside Right Panel */}
           <div className="z-10 flex items-center justify-between w-full">
-            
+
           </div>
 
           {/* Bottom Caption inside Right Panel */}

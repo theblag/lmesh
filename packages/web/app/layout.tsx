@@ -14,7 +14,7 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "LMESH — Live Multi-user Execution Shell",
+  title: "LMESH - Live Multi-user Execution Shell",
   description: "Share your local shell session with collaborators. Real-time command line collaboration inside the browser.",
 };
 

@@ -81,7 +81,7 @@ export function DocsLayoutClient({
   return (
     <ThemeProvider>
       <div className="w-full min-h-screen bg-(--background) text-(--foreground) bg-grid-pattern relative flex flex-col selection:bg-(--selection-bg) selection:text-(--selection-fg) transition-colors duration-200">
-        
+
         {/* Subtle background glow */}
         <div className="absolute top-[-10%] left-[50%] translate-x-[-50%] w-150 h-75 bg-(--glow-color) rounded-full blur-[120px] pointer-events-none" />
 
@@ -95,11 +95,8 @@ export function DocsLayoutClient({
             >
               {mobileMenuOpen ? <Cross2Icon className="w-4 h-4" /> : <HamburgerMenuIcon className="w-4 h-4" />}
             </button>
-            <Link href="/" className="flex items-center gap-2.5">
-              <img src="/lmesh-logo.png" alt="LMESH Logo" className="w-6 h-6 object-contain" />
-              <span className="font-mono text-sm tracking-widest uppercase font-semibold text-(--foreground)">
-                lmesh
-              </span>
+            <Link href="/" className="flex items-center">
+              <img src="/lmesh-logo-favicon.png" alt="LMESH" className="h-8 sm:h-9 w-auto object-contain theme-logo" />
             </Link>
             <span className="hidden sm:inline-block text-[11px] font-mono uppercase tracking-wider px-2 py-0.5 rounded border border-(--border-color) bg-(--card-bg) text-(--text-muted)">
               docs
@@ -137,20 +134,18 @@ export function DocsLayoutClient({
 
           {/* Left Sidebar Navigation */}
           <aside
-            className={`fixed md:sticky top-16 z-30 w-64 shrink-0 h-[calc(100vh-4rem)] overflow-y-auto docs-scrollbar border-r border-(--border-color) bg-(--background) md:bg-transparent pt-8 pb-12 pr-6 transition-transform duration-200 ${
-              mobileMenuOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
-            }`}
+            className={`fixed md:sticky top-16 z-30 w-64 shrink-0 h-[calc(100vh-4rem)] overflow-y-auto docs-scrollbar bg-(--background) md:bg-transparent pt-8 pb-12 pr-6 transition-transform duration-200 ${mobileMenuOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
+              }`}
           >
             <div className="space-y-8 font-sans text-xs">
-              
+
               {/* Section 1: Getting Started */}
               <div>
                 <Link
                   href="/docs"
                   onClick={(e) => handleSectionClick(e, "/docs")}
-                  className={`font-mono text-[11px] uppercase tracking-wider font-semibold mb-3 flex items-center justify-between transition-colors ${
-                    isQuickstart ? "text-(--foreground)" : "text-(--text-subtle) hover:text-(--foreground)"
-                  }`}
+                  className={`font-mono text-[11px] uppercase tracking-wider font-semibold mb-3 flex items-center justify-between transition-colors ${isQuickstart ? "text-(--foreground)" : "text-(--text-subtle) hover:text-(--foreground)"
+                    }`}
                 >
                   <span>1. Getting Started</span>
                 </Link>
@@ -160,11 +155,10 @@ export function DocsLayoutClient({
                     <Link
                       href="/docs#overview"
                       onClick={(e) => handleAnchorClick(e, "/docs#overview")}
-                      className={`block py-0.5 transition-colors ${
-                        isQuickstart
+                      className={`block py-0.5 transition-colors ${isQuickstart
                           ? "text-(--foreground) font-medium border-l-2 border-(--foreground) -ml-[13px] pl-3"
                           : "text-(--text-muted) hover:text-(--foreground)"
-                      }`}
+                        }`}
                     >
                       Quick Start
                     </Link>
@@ -217,9 +211,8 @@ export function DocsLayoutClient({
                 <Link
                   href="/docs/cli"
                   onClick={(e) => handleSectionClick(e, "/docs/cli")}
-                  className={`font-mono text-[11px] uppercase tracking-wider font-semibold mb-3 flex items-center justify-between transition-colors ${
-                    isCli ? "text-(--foreground)" : "text-(--text-subtle) hover:text-(--foreground)"
-                  }`}
+                  className={`font-mono text-[11px] uppercase tracking-wider font-semibold mb-3 flex items-center justify-between transition-colors ${isCli ? "text-(--foreground)" : "text-(--text-subtle) hover:text-(--foreground)"
+                    }`}
                 >
                   <span>2. CLI Reference</span>
                 </Link>
@@ -229,11 +222,10 @@ export function DocsLayoutClient({
                     <Link
                       href="/docs/cli"
                       onClick={(e) => handleSectionClick(e, "/docs/cli")}
-                      className={`block py-0.5 transition-colors ${
-                        isCli
+                      className={`block py-0.5 transition-colors ${isCli
                           ? "text-(--foreground) font-medium border-l-2 border-(--foreground) -ml-[13px] pl-3"
                           : "text-(--text-muted) hover:text-(--foreground)"
-                      }`}
+                        }`}
                     >
                       Command Overview
                     </Link>
@@ -295,9 +287,8 @@ export function DocsLayoutClient({
                 <Link
                   href="/docs/controls"
                   onClick={(e) => handleSectionClick(e, "/docs/controls")}
-                  className={`font-mono text-[11px] uppercase tracking-wider font-semibold mb-3 flex items-center justify-between transition-colors ${
-                    isControls ? "text-(--foreground)" : "text-(--text-subtle) hover:text-(--foreground)"
-                  }`}
+                  className={`font-mono text-[11px] uppercase tracking-wider font-semibold mb-3 flex items-center justify-between transition-colors ${isControls ? "text-(--foreground)" : "text-(--text-subtle) hover:text-(--foreground)"
+                    }`}
                 >
                   <span>3. Controls & Hotkeys</span>
                 </Link>
@@ -307,11 +298,10 @@ export function DocsLayoutClient({
                     <Link
                       href="/docs/controls"
                       onClick={(e) => handleSectionClick(e, "/docs/controls")}
-                      className={`block py-0.5 transition-colors ${
-                        isControls
+                      className={`block py-0.5 transition-colors ${isControls
                           ? "text-(--foreground) font-medium border-l-2 border-(--foreground) -ml-[13px] pl-3"
                           : "text-(--text-muted) hover:text-(--foreground)"
-                      }`}
+                        }`}
                     >
                       Hotkey Matrix
                     </Link>
@@ -364,9 +354,8 @@ export function DocsLayoutClient({
                 <Link
                   href="/docs/architecture"
                   onClick={(e) => handleSectionClick(e, "/docs/architecture")}
-                  className={`font-mono text-[11px] uppercase tracking-wider font-semibold mb-3 flex items-center justify-between transition-colors ${
-                    isArchitecture ? "text-(--foreground)" : "text-(--text-subtle) hover:text-(--foreground)"
-                  }`}
+                  className={`font-mono text-[11px] uppercase tracking-wider font-semibold mb-3 flex items-center justify-between transition-colors ${isArchitecture ? "text-(--foreground)" : "text-(--text-subtle) hover:text-(--foreground)"
+                    }`}
                 >
                   <span>4. Architecture</span>
                 </Link>
@@ -376,11 +365,10 @@ export function DocsLayoutClient({
                     <Link
                       href="/docs/architecture"
                       onClick={(e) => handleSectionClick(e, "/docs/architecture")}
-                      className={`block py-0.5 transition-colors ${
-                        isArchitecture
+                      className={`block py-0.5 transition-colors ${isArchitecture
                           ? "text-(--foreground) font-medium border-l-2 border-(--foreground) -ml-[13px] pl-3"
                           : "text-(--text-muted) hover:text-(--foreground)"
-                      }`}
+                        }`}
                     >
                       Package Ecosystem
                     </Link>

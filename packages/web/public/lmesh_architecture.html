@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LMESH Architecture Diagram</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background-color: #0c0d12;
+      color: #ededed;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    #canvas-container {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      overflow: hidden;
+      cursor: grab;
+      background-image: radial-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px);
+      background-size: 24px 24px;
+    }
+
+    #canvas-container.grabbing {
+      cursor: grabbing;
+    }
+
+    #viewport {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transform-origin: center center;
+      transition: transform 0.05s ease-out;
+      pointer-events: none;
+    }
+
+    #diagram2 {
+      padding: 2.5rem;
+      pointer-events: auto;
+    }
+
+    #diagram2 svg {
+      width: 900px !important;
+      min-width: 900px !important;
+      max-width: none !important;
+      height: auto !important;
+      filter: drop-shadow(0 12px 30px rgba(0,0,0,0.6));
+    }
+
+    /* Mermaid Dark Mode overrides */
+    .cluster rect {
+      fill: #10121a !important;
+      stroke: #252a38 !important;
+      stroke-width: 1.5px !important;
+      rx: 10px !important;
+    }
+    .node .label text, .cluster-label text {
+      fill: #f1f5f9 !important;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace !important;
+      font-size: 13px !important;
+    }
+    .edgePath path {
+      stroke: #64748b !important;
+      stroke-width: 2px !important;
+    }
+    .edgeLabel rect {
+      fill: #0c0d12 !important;
+      opacity: 0.95 !important;
+    }
+    .edgeLabel text {
+      fill: #cbd5e1 !important;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace !important;
+      font-size: 11.5px !important;
+    }
+
+    #loading {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      background: #0c0d12;
+      color: #8e93a0;
+      font-size: 12px;
+      z-index: 50;
+      transition: opacity 0.2s ease-out;
+    }
+    .spinner {
+      width: 24px;
+      height: 24px;
+      border: 2px solid #232630;
+      border-top-color: #3b82f6;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    #controls-hint {
+      position: absolute;
+      bottom: 12px;
+      left: 12px;
+      background: rgba(12, 13, 18, 0.85);
+      backdrop-filter: blur(8px);
+      border: 1px solid #1f212a;
+      border-radius: 6px;
+      padding: 6px 12px;
+      font-size: 11px;
+      color: #666c7d;
+      pointer-events: none;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    #controls-hint span.dot {
+      color: #363a47;
+    }
+    #badge-readonly {
+      position: absolute;
+      bottom: 12px;
+      right: 12px;
+      background: rgba(12, 13, 18, 0.85);
+      backdrop-filter: blur(8px);
+      border: 1px solid #1f212a;
+      border-radius: 6px;
+      padding: 6px 12px;
+      font-size: 11px;
+      color: #10b981;
+      font-weight: 500;
+      pointer-events: none;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    #badge-readonly::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #10b981;
+      display: inline-block;
+    }
+  </style>
+</head>
+<body>
+  <div id="loading">
+    <div class="spinner"></div>
+    <span>Rendering vector architecture diagram...</span>
+  </div>
+
+  <div id="canvas-container">
+    <div id="viewport">
+      <div id="diagram2"></div>
+    </div>
+
+    <div id="controls-hint">
+      <span>Drag to pan</span>
+      <span class="dot">•</span>
+      <span>Scroll to zoom</span>
+      <span class="dot">•</span>
+      <span>Double-click to reset</span>
+    </div>
+
+    <div id="badge-readonly">
+      Vector Architecture • Read-only
+    </div>
+  </div>
+
+  <script type="module">
+    import mermaid from 'https://esm.sh/mermaid@11/dist/mermaid.esm.min.mjs';
+
+    mermaid.initialize({
+      startOnLoad: false,
+      theme: 'dark',
+      themeVariables: {
+        darkMode: true,
+        fontSize: '12px',
+        fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace',
+        background: '#0c0d12',
+        primaryColor: '#131826',
+        primaryTextColor: '#f8fafc',
+        primaryBorderColor: '#3b82f6',
+        lineColor: '#64748b',
+        secondaryColor: '#161326',
+        tertiaryColor: '#0f1015',
+        clusterBkg: '#10131d',
+        clusterBorder: '#222838',
+        edgeLabelBackground: '#0c0d12',
+        textColor: '#e2e8f0'
+      },
+      flowchart: {
+        curve: 'basis',
+        padding: 24,
+        nodeSpacing: 36,
+        rankSpacing: 46,
+      }
+    });
+
+    const diagram = `flowchart TD
+    classDef host fill:#101726,stroke:#3b82f6,stroke-width:1.5px,color:#f8fafc;
+    classDef daemon fill:#0f2038,stroke:#60a5fa,stroke-width:1.5px,color:#f8fafc;
+    classDef relay fill:#1a1429,stroke:#a855f7,stroke-width:1.5px,color:#f8fafc;
+    classDef storage fill:#261221,stroke:#ec4899,stroke-width:1.5px,color:#f8fafc;
+    classDef client fill:#0c221a,stroke:#10b981,stroke-width:1.5px,color:#f8fafc;
+    classDef active fill:#1e293b,stroke:#f59e0b,stroke-width:2px,color:#f8fafc;
+
+    subgraph HOST ["Host Environment (packages/cli)"]
+        direction TB
+        HostShell["Host Shell (bash / zsh / pwsh)"]:::host
+        PtyEngine["Virtual PTY Engine (node-pty ConPTY / POSIX)"]:::host
+        CliDaemon["LMESH CLI Daemon (Outbound WSS Client)"]:::daemon
+        PreemptLock["Preemption Guard (Physical Keypress Priority)"]:::daemon
+
+        HostShell <-->|"Raw IO / SIGWINCH"| PtyEngine
+        PtyEngine <-->|"stdio byte stream"| CliDaemon
+        PreemptLock -.->|"Preempts remote token"| PtyEngine
+    end
+
+    subgraph RELAY ["LMESH Relay Cluster (packages/server)"]
+        direction TB
+        IngressGw["Ingress Gateway (Port 443 • TLS 1.3 WSS)"]:::relay
+        TokenMutex["Single-Token Mutex (Write Lock Engine)"]:::relay
+        SessionCoord["Session Coordinator (JWT Auth & Client State)"]:::relay
+
+        subgraph BACKEND ["State & Clustering Layer"]
+            direction LR
+            RedisPubSub[("Redis Pub/Sub (lmesh:session:* Fanout)")]:::storage
+            PostgresDB[("PostgreSQL (Audit Logs & Sessions)")]:::storage
+        end
+
+        IngressGw <-->|"Control Frames"| TokenMutex
+        IngressGw <-->|"Session State"| SessionCoord
+        SessionCoord <-->|"Multi-Node Broadcast"| RedisPubSub
+        SessionCoord -.->|"Async Persist"| PostgresDB
+    end
+
+    subgraph CLIENTS ["Collaborator Viewports (packages/web)"]
+        direction TB
+        ViewerA["Collaborator A (Viewer • xterm.js WebGL)"]:::client
+        ViewerB["Collaborator B (Active Write Token Holder)"]:::active
+        WebClient["Browser WebSocket Client (Reconnect & Multiplexer)"]:::client
+
+        WebClient -->|"Fanout Output"| ViewerA
+        WebClient <-->|"Token-Gated Stdin"| ViewerB
+    end
+
+    CliDaemon <==>|"Outbound TLS 1.3 WSS (Zero Inbound NAT Ports)"| IngressGw
+    IngressGw <==>|"Multiplexed WSS (Binary Chunks & Control)"| WebClient`;
+
+    try {
+      const { svg } = await mermaid.render('lmesh-svg-render', diagram);
+      const target = document.getElementById('diagram2');
+      target.innerHTML = svg;
+      
+      const loading = document.getElementById('loading');
+      if (loading) {
+        loading.style.opacity = '0';
+        setTimeout(() => loading.remove(), 200);
+      }
+    } catch (err) {
+      console.error("Mermaid rendering error:", err);
+      const loading = document.getElementById('loading');
+      if (loading) {
+        loading.innerHTML = '<span style="color:#ef4444;">Failed to render diagram</span>';
+      }
+    }
+
+    // -------------------------------------------------------------
+    // Interactive Pan & Zoom Engine
+    // -------------------------------------------------------------
+    const container = document.getElementById('canvas-container');
+    const viewport = document.getElementById('viewport');
+
+    let zoom = 1.0;
+    let panX = 0;
+    let panY = 0;
+    let isDragging = false;
+    let startX = 0;
+    let startY = 0;
+
+    function applyTransform() {
+      viewport.style.transform = `translate3d(${panX}px, ${panY}px, 0px) scale(${zoom})`;
+      container.style.backgroundPosition = `${panX}px ${panY}px`;
+
+      window.parent.postMessage({ type: 'lmesh-diagram-zoom', zoom: Math.round(zoom * 100) }, '*');
+    }
+
+    applyTransform();
+
+    // Mouse drag pan
+    container.addEventListener('mousedown', (e) => {
+      if (e.button !== 0) return;
+      isDragging = true;
+      startX = e.clientX - panX;
+      startY = e.clientY - panY;
+      container.classList.add('grabbing');
+    });
+
+    window.addEventListener('mousemove', (e) => {
+      if (!isDragging) return;
+      panX = e.clientX - startX;
+      panY = e.clientY - startY;
+      applyTransform();
+    });
+
+    window.addEventListener('mouseup', () => {
+      if (isDragging) {
+        isDragging = false;
+        container.classList.remove('grabbing');
+      }
+    });
+
+    // Mouse wheel zoom
+    container.addEventListener('wheel', (e) => {
+      e.preventDefault();
+      const zoomFactor = e.deltaY < 0 ? 1.12 : 0.89;
+      zoom = Math.min(Math.max(0.35, zoom * zoomFactor), 3.0);
+      applyTransform();
+    }, { passive: false });
+
+    // Double-click reset
+    container.addEventListener('dblclick', () => {
+      zoom = 1.0;
+      panX = 0;
+      panY = 0;
+      applyTransform();
+    });
+
+    // Handle messages from outer Next.js toolbar
+    window.addEventListener('message', (event) => {
+      const data = event.data;
+      if (!data) return;
+
+      if (data.action === 'zoomIn') {
+        zoom = Math.min(3.0, zoom * 1.2);
+        applyTransform();
+      } else if (data.action === 'zoomOut') {
+        zoom = Math.max(0.35, zoom / 1.2);
+        applyTransform();
+      } else if (data.action === 'reset') {
+        zoom = 1.0;
+        panX = 0;
+        panY = 0;
+        applyTransform();
+      }
+    });
+  </script>
+</body>
+</html>
