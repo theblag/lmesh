@@ -41,3 +41,15 @@ desktop.ini
 
 # TypeScript cache
 *.tsbuildinfo
+
+# Internal Docs & Agent Scaffolding
+CLAUDE.md
+**/CLAUDE.md
+AGENTS.md
+**/AGENTS.md
+.agents/
+**/.agents/
+PROJECT_OVERVIEW.md
+REMAINING_WORK*.md
+REMAINING_WORK*.MD
+ASCII_ART_GUIDE.md
