@@ -1,8 +1,8 @@
 <p align="center">
-  <img src="packages/web/public/lmesh-logo.png" width="84" height="84" alt="LMESH Logo" style="border-radius: 16px;" />
+  <img src="packages/web/public/lmesh-logo.png" width="600" height="200" alt="LMESH Logo" style="border-radius: 16px;" />
 </p>
 
-<h1 align="center">LMESH</h1>
+<!-- <h1 align="center">LMESH</h1> -->
 
 <p align="center">
   <strong>Live Multi-user Execution Shell</strong><br />
@@ -106,9 +106,9 @@ flowchart TD
     IngressGw <==>|"Multiplexed WSS<br/>(Binary Chunks & Control)"| WebClient
 ```
 
-<p align="center">
+<!-- <p align="center">
   <img src="packages/web/public/data-flow-diagram.png" width="850" alt="LMESH Data Flow Architecture Diagram" style="border-radius: 8px;" />
-</p>
+</p> -->
 
 ---
 
