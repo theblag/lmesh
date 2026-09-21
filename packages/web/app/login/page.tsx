@@ -15,6 +15,7 @@ import {
   DesktopIcon
 } from "@radix-ui/react-icons";
 import { SERVER_URL } from "../lib/config";
+import { ParticleNetworkCanvas } from "../components/ParticleNetworkCanvas";
 
 interface UserProfile {
   id?: string;
@@ -309,30 +310,21 @@ export default function LoginPage() {
         </div>
 
         {/* RIGHT COLUMN (Visual Panel - 5 cols on desktop, spans full height) */}
-        <div className="hidden md:flex md:col-span-5 relative bg-(--card-bg) border-l border-(--border-color) flex-col justify-between p-8 overflow-hidden min-h-screen">
+        <div className="hidden md:flex md:col-span-5 relative bg-[#080a10] border-l border-(--border-color) flex-col items-center justify-center p-8 overflow-hidden min-h-screen text-white select-none">
 
-          {/* Background Image filling the visual column */}
-          <img
-            src="/mesh_login_bg.png"
-            alt="LMESH Visual Banner"
-            className="absolute inset-0 w-full h-full object-cover"
-          />
+          {/* Interactive Particle Network Canvas */}
+          <ParticleNetworkCanvas />
 
-          {/* Gradient Overlay for Text Readability */}
-          <div className="absolute inset-0 bg-linear-to-b from-black/50 via-transparent to-black/75 pointer-events-none" />
+          {/* Subtle Ambient Glow */}
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[450px] h-[450px] bg-white/[0.04] rounded-full blur-[140px] pointer-events-none z-0" />
 
-          {/* Top Tag inside Right Panel */}
-          <div className="z-10 flex items-center justify-between w-full">
-
-          </div>
-
-          {/* Bottom Caption inside Right Panel */}
-          <div className="z-10 text-center space-y-1.5 max-w-sm mx-auto p-4 rounded-2xl bg-black/40 backdrop-blur-md border border-white/10 text-white">
-            <h3 className="text-sm font-semibold tracking-tight">
-              Live Execution Engine
-            </h3>
-            <p className="text-xs text-white/70 leading-relaxed">
-              Stream terminal sessions securely over WebSockets with real-time audit logging.
+          {/* Center Impact Typography (Matching Reference Screenshot) */}
+          <div className="z-10 text-center space-y-3 max-w-md mx-auto my-auto flex flex-col items-center justify-center">
+            <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black uppercase tracking-tight leading-none text-white drop-shadow-xs font-sans">
+              EXECUTION ENGINE
+            </h2>
+            <p className="text-xs sm:text-sm text-white/70 max-w-sm font-sans leading-relaxed tracking-normal">
+              Stream terminal sessions securely over WebSockets with real-time audit logging
             </p>
           </div>
 
