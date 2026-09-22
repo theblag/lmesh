@@ -19,6 +19,7 @@
     "express": "^5.2.1",
     "ioredis": "^5.11.1",
     "jsonwebtoken": "^9.0.3",
+    "tsx": "^4.23.12",
     "ws": "^8.21.3"
   },
   "devDependencies": {
@@ -28,7 +29,6 @@
     "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^26.2.0",
     "@types/ws": "^8.18.1",
-    "tsx": "^4.23.12",
     "typescript": "^7.0.2"
   }
 }
