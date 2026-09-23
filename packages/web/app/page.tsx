@@ -271,8 +271,8 @@ export default function Home() {
                         href="/login"
                         className="w-full py-2.5 px-4 rounded-md bg-(--btn-bg) text-(--btn-fg) hover:opacity-90 text-xs font-semibold flex items-center justify-center gap-2 transition-opacity cursor-pointer shadow-xs font-sans"
                       >
-                        <GitHubLogoIcon className="w-4 h-4" />
-                        <span>Login with GitHub</span>
+                        {/* <GitHubLogoIcon className="w-4 h-4" /> */}
+                        <span>Login</span>
                       </Link>
 
                     </div>

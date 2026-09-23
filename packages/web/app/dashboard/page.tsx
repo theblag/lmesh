@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { HostDashboard } from "../components/HostDashboard";
 import { ThemeProvider } from "../components/ThemeContext";
 import { ThemeToggle } from "../components/ThemeToggle";
@@ -28,61 +29,59 @@ interface DashboardStats {
 }
 
 export default function DashboardPage() {
+  const router = useRouter();
   const [authToken, setAuthToken] = useState<string | null>(null);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+
+  const fetchDashboardStats = (token: string) => {
+    setIsLoading(true);
+    fetch(`${SERVER_URL}/api/dashboard/stats`, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    })
+      .then((res) => {
+        if (!res.ok) {
+          localStorage.removeItem("lmesh_auth_token");
+          router.replace("/login");
+          return;
+        }
+        return res.json();
+      })
+      .then((data) => {
+        if (data?.user) {
+          setUserProfile(data.user);
+        }
+        if (data?.stats) {
+          setStats(data.stats);
+        }
+      })
+      .catch((err) => {
+        console.error("Dashboard stats fetch error:", err);
+        router.replace("/login");
+      })
+      .finally(() => setIsLoading(false));
+  };
 
   useEffect(() => {
     if (typeof window !== "undefined") {
       const savedToken = localStorage.getItem("lmesh_auth_token");
       if (savedToken) {
         setAuthToken(savedToken);
+        fetchDashboardStats(savedToken);
       } else {
-        setUserProfile({
-          username: "octocat",
-          avatar_url: "https://github.com/octocat.png"
-        });
-        setIsLoading(false);
+        router.replace("/login");
       }
     }
-  }, []);
-
-  useEffect(() => {
-    if (authToken) {
-      fetch(`${SERVER_URL}/api/dashboard/stats`, {
-        headers: {
-          Authorization: `Bearer ${authToken}`
-        }
-      })
-        .then((res) => {
-          if (!res.ok) throw new Error("Invalid token");
-          return res.json();
-        })
-        .then((data) => {
-          if (data.user) {
-            setUserProfile(data.user);
-          }
-          if (data.stats) {
-            setStats(data.stats);
-          }
-        })
-        .catch(() => {
-          setUserProfile({
-            username: "octocat",
-            avatar_url: "https://github.com/octocat.png"
-          });
-        })
-        .finally(() => setIsLoading(false));
-    }
-  }, [authToken]);
-
-
+  }, [router]);
 
   const handleLogout = () => {
     localStorage.removeItem("lmesh_auth_token");
     setAuthToken(null);
     setUserProfile(null);
+    router.replace("/login");
   };
 
   return (
@@ -114,7 +113,12 @@ export default function DashboardPage() {
           </div>
 
           <nav className="flex items-center gap-4">
-            {userProfile ? (
+            {isLoading ? (
+              <div className="flex items-center gap-2">
+                <div className="w-6 h-6 rounded-full bg-(--border-color)/40 animate-pulse" />
+                <div className="w-16 h-3.5 bg-(--border-color)/30 rounded animate-pulse" />
+              </div>
+            ) : userProfile ? (
               <div className="flex items-center gap-3">
                 <div className="flex items-center gap-2">
                   {userProfile.username ? (
@@ -151,7 +155,7 @@ export default function DashboardPage() {
         </header>
 
         {/* Dashboard Main Content */}
-        <main className="w-full flex-1 flex flex-col items-center z-10 py-6">
+        <main className="w-full flex-1 flex flex-col items-center justify-center z-10 py-6">
           <HostDashboard userProfile={userProfile || undefined} authToken={authToken} stats={stats} isLoading={isLoading} />
         </main>
 

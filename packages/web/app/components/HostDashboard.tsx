@@ -211,6 +211,104 @@ export function HostDashboard({ userProfile, authToken, stats, isLoading: isProf
     setSessions(defaultData);
   };
 
+  // Loading Grids UI: Displayed while database stats or sessions are loading from Neon DB
+  if (isLoading) {
+    return (
+      <div className="w-full max-w-5xl px-4 sm:px-8 py-8 space-y-8 font-sans animate-in fade-in duration-200">
+        {/* User Header Profile Banner Skeleton Grid */}
+        <div className="p-6 rounded-xl bg-(--card-bg) border border-(--border-color) flex flex-col md:flex-row md:items-center justify-between gap-6">
+          <div className="flex items-center gap-4">
+            <div className="w-14 h-14 rounded-full bg-(--border-color)/40 animate-pulse shrink-0" />
+            <div className="space-y-2">
+              <div className="flex items-center gap-2.5">
+                <div className="h-6 w-36 bg-(--border-color)/50 rounded-md animate-pulse" />
+                <div className="h-5 w-24 bg-(--border-color)/30 rounded-full animate-pulse" />
+              </div>
+              <div className="h-3.5 w-64 sm:w-80 bg-(--border-color)/30 rounded animate-pulse" />
+            </div>
+          </div>
+          <div className="flex items-center gap-3 shrink-0">
+            <div className="h-9 w-32 bg-(--border-color)/40 rounded-lg animate-pulse" />
+          </div>
+        </div>
+
+        {/* Summary Analytics Cards Grid Skeleton */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="p-5 rounded-xl bg-(--card-bg) border border-(--border-color) space-y-3">
+            <div className="flex items-center justify-between">
+              <div className="h-3.5 w-32 bg-(--border-color)/40 rounded animate-pulse" />
+              <div className="w-4 h-4 rounded bg-(--border-color)/30 animate-pulse" />
+            </div>
+            <div className="h-9 w-20 bg-(--border-color)/50 rounded-lg animate-pulse my-1" />
+            <div className="h-3 w-28 bg-(--border-color)/30 rounded animate-pulse" />
+          </div>
+
+          <div className="p-5 rounded-xl bg-(--card-bg) border border-(--border-color) space-y-3">
+            <div className="flex items-center justify-between">
+              <div className="h-3.5 w-36 bg-(--border-color)/40 rounded animate-pulse" />
+              <div className="w-4 h-4 rounded bg-(--border-color)/30 animate-pulse" />
+            </div>
+            <div className="h-9 w-16 bg-(--border-color)/50 rounded-lg animate-pulse my-1" />
+            <div className="h-3 w-32 bg-(--border-color)/30 rounded animate-pulse" />
+          </div>
+
+          <div className="p-5 rounded-xl bg-(--card-bg) border border-(--border-color) space-y-3">
+            <div className="flex items-center justify-between">
+              <div className="h-3.5 w-28 bg-(--border-color)/40 rounded animate-pulse" />
+              <div className="w-2.5 h-2.5 rounded-full bg-(--border-color)/40 animate-pulse" />
+            </div>
+            <div className="h-9 w-16 bg-(--border-color)/50 rounded-lg animate-pulse my-1" />
+            <div className="h-3 w-36 bg-(--border-color)/30 rounded animate-pulse" />
+          </div>
+        </div>
+
+        {/* Main Table Section Skeleton Grid */}
+        <div className="space-y-4">
+          {/* Table Controls Skeleton */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="space-y-1.5">
+              <div className="h-5 w-40 bg-(--border-color)/50 rounded animate-pulse" />
+              <div className="h-3.5 w-60 bg-(--border-color)/30 rounded animate-pulse" />
+            </div>
+            <div className="h-9 w-full sm:w-64 bg-(--border-color)/30 rounded-lg animate-pulse" />
+          </div>
+
+          {/* Session Inventory Table Skeleton */}
+          <div className="rounded-xl border border-(--border-color) bg-(--card-bg) overflow-hidden shadow-xs">
+            <div className="p-4 border-b border-(--border-subtle) flex items-center justify-between bg-(--background)/50">
+              <div className="h-3.5 w-32 bg-(--border-color)/40 rounded animate-pulse" />
+              <div className="h-3.5 w-40 bg-(--border-color)/30 rounded animate-pulse" />
+            </div>
+
+            <div className="divide-y divide-(--border-subtle)">
+              {[1, 2, 3, 4].map((i) => (
+                <div key={i} className="p-5 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                  <div className="space-y-2.5 flex-1 min-w-0">
+                    <div className="flex flex-wrap items-center gap-2.5">
+                      <div className="h-4.5 w-44 bg-(--border-color)/40 rounded animate-pulse" />
+                      <div className="h-4 w-16 bg-(--border-color)/30 rounded animate-pulse" />
+                      <div className="h-4 w-20 bg-(--border-color)/30 rounded-full animate-pulse" />
+                    </div>
+                    <div className="flex items-center gap-4">
+                      <div className="h-3 w-28 bg-(--border-color)/25 rounded animate-pulse" />
+                      <div className="h-3 w-20 bg-(--border-color)/25 rounded animate-pulse" />
+                      <div className="h-3 w-24 bg-(--border-color)/25 rounded animate-pulse" />
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2 shrink-0">
+                    <div className="h-7 w-24 bg-(--border-color)/35 rounded-lg animate-pulse" />
+                    <div className="h-7 w-16 bg-(--border-color)/35 rounded-lg animate-pulse" />
+                    <div className="h-7 w-20 bg-(--border-color)/35 rounded-lg animate-pulse" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="w-full max-w-5xl px-4 sm:px-8 py-8 space-y-8 font-sans">
       
@@ -232,7 +330,7 @@ export function HostDashboard({ userProfile, authToken, stats, isLoading: isProf
           <div className="space-y-1">
             <div className="flex items-center gap-2.5">
               <h1 className="text-xl font-bold text-(--foreground) tracking-tight">
-                {userProfile ? `@${userProfile.username}` : "GitHub Developer (Mock)"}
+                {userProfile ? `@${userProfile.username}` : "Developer"}
               </h1>
               <span className="text-[11px] font-medium px-2.5 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400">
                 Verified Host
@@ -253,13 +351,15 @@ export function HostDashboard({ userProfile, authToken, stats, isLoading: isProf
             <PlusIcon className="w-4 h-4" />
             New Hosted Room
           </button>
-          <button
-            onClick={handleResetDefaults}
-            title="Reset to default mock sessions"
-            className="p-2 rounded-lg border border-(--border-color) bg-(--card-bg) hover:bg-(--card-hover) text-(--text-subtle) hover:text-(--foreground) transition-colors cursor-pointer text-xs"
-          >
-            <ResetIcon className="w-4 h-4" />
-          </button>
+          {!authToken && (
+            <button
+              onClick={handleResetDefaults}
+              title="Reset to default mock sessions"
+              className="p-2 rounded-lg border border-(--border-color) bg-(--card-bg) hover:bg-(--card-hover) text-(--text-subtle) hover:text-(--foreground) transition-colors cursor-pointer text-xs"
+            >
+              <ResetIcon className="w-4 h-4" />
+            </button>
+          )}
         </div>
       </div>
 
@@ -270,13 +370,9 @@ export function HostDashboard({ userProfile, authToken, stats, isLoading: isProf
             <span className="text-xs font-medium text-(--text-subtle)">Total Hosted Sessions</span>
             <CounterClockwiseClockIcon className="w-4 h-4 text-(--text-subtle)" />
           </div>
-          {isLoading ? (
-            <div className="h-9 w-20 bg-(--border-color)/40 rounded-lg animate-pulse my-1" />
-          ) : (
-            <div className="text-3xl font-bold text-(--foreground) tracking-tight">
-              {stats ? stats.totalSessions : sessions.length}
-            </div>
-          )}
+          <div className="text-3xl font-bold text-(--foreground) tracking-tight">
+            {stats ? stats.totalSessions : sessions.length}
+          </div>
           <p className="text-[11px] text-(--text-muted)">Persisted in Neon DB</p>
         </div>
 
@@ -285,13 +381,9 @@ export function HostDashboard({ userProfile, authToken, stats, isLoading: isProf
             <span className="text-xs font-medium text-(--text-subtle)">Collaborators Reached</span>
             <PersonIcon className="w-4 h-4 text-(--text-subtle)" />
           </div>
-          {isLoading ? (
-            <div className="h-9 w-20 bg-(--border-color)/40 rounded-lg animate-pulse my-1" />
-          ) : (
-            <div className="text-3xl font-bold text-(--foreground) tracking-tight">
-              {stats ? stats.totalCollaborators : sessions.reduce((acc, s) => acc + s.collaboratorsCount, 0)}
-            </div>
-          )}
+          <div className="text-3xl font-bold text-(--foreground) tracking-tight">
+            {stats ? stats.totalCollaborators : sessions.reduce((acc, s) => acc + s.collaboratorsCount, 0)}
+          </div>
           <p className="text-[11px] text-(--text-muted)">Unique active connections</p>
         </div>
 
@@ -300,13 +392,9 @@ export function HostDashboard({ userProfile, authToken, stats, isLoading: isProf
             <span className="text-xs font-medium text-(--text-subtle)">Active Live Rooms</span>
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
           </div>
-          {isLoading ? (
-            <div className="h-9 w-20 bg-(--border-color)/40 rounded-lg animate-pulse my-1" />
-          ) : (
-            <div className="text-3xl font-bold text-emerald-400 tracking-tight">
-              {stats ? stats.activeSessions : sessions.filter((s) => s.status === "active").length}
-            </div>
-          )}
+          <div className="text-3xl font-bold text-emerald-400 tracking-tight">
+            {stats ? stats.activeSessions : sessions.filter((s) => s.status === "active").length}
+          </div>
           <p className="text-[11px] text-(--text-muted)">Ready for inbound traffic</p>
         </div>
       </div>
@@ -343,24 +431,12 @@ export function HostDashboard({ userProfile, authToken, stats, isLoading: isProf
               Session Inventory
             </span>
             <span className="text-xs text-(--text-subtle)">
-              {isLoading ? "Loading sessions..." : `Showing ${paginatedSessions.length} of ${filteredSessions.length} rooms (Page ${currentPage} of ${totalPages})`}
+              Showing {paginatedSessions.length} of {filteredSessions.length} rooms (Page {currentPage} of {totalPages})
             </span>
           </div>
 
           <div className="divide-y divide-(--border-subtle)">
-            {isLoading ? (
-              <div className="p-6 space-y-4">
-                {[1, 2, 3].map((i) => (
-                  <div key={i} className="flex items-center justify-between gap-4 animate-pulse">
-                    <div className="space-y-2 flex-1">
-                      <div className="h-4 w-48 bg-(--border-color)/40 rounded" />
-                      <div className="h-3 w-32 bg-(--border-color)/30 rounded" />
-                    </div>
-                    <div className="h-8 w-24 bg-(--border-color)/40 rounded-lg" />
-                  </div>
-                ))}
-              </div>
-            ) : filteredSessions.length === 0 ? (
+            {filteredSessions.length === 0 ? (
               <div className="p-12 text-center space-y-2">
                 <p className="text-xs font-medium text-(--foreground)">No hosted rooms found</p>
                 <p className="text-xs text-(--text-subtle)">Run <code className="px-1.5 py-0.5 rounded bg-(--background) border border-(--border-color) text-emerald-400 font-mono">lmesh share</code> in your terminal to start a session!</p>
@@ -616,8 +692,15 @@ export function HostDashboard({ userProfile, authToken, stats, isLoading: isProf
             {/* Read-Only Terminal Body */}
             <div className="p-4 h-80 overflow-y-auto space-y-2 text-xs text-gray-200 select-text">
               {isLogsLoading ? (
-                <div className="p-8 text-center text-gray-500 font-sans text-xs animate-pulse">
-                  Loading session audit logs from Neon DB...
+                <div className="space-y-3 p-3">
+                  {[1, 2, 3, 4, 5].map((i) => (
+                    <div key={i} className="flex items-center gap-3 animate-pulse">
+                      <div className="w-5 h-3 bg-gray-800 rounded" />
+                      <div className="w-16 h-3 bg-gray-800 rounded" />
+                      <div className="w-14 h-3 bg-emerald-500/20 rounded" />
+                      <div className="h-3 bg-gray-800 rounded flex-1" style={{ maxWidth: `${50 + (i * 9) % 40}%` }} />
+                    </div>
+                  ))}
                 </div>
               ) : fetchedLogs.length === 0 ? (
                 <div className="p-8 text-center text-gray-500 font-sans text-xs">
