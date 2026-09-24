@@ -300,7 +300,7 @@ export default function QuickstartDocsPage() {
                 https://lmesh.vercel.app/x7k2m9p
               </div>
               <div className="text-[#555a68] text-[11px] pt-2">
-                (Type 'exit' or press Ctrl+] to end session • Ctrl+S for Safety Mode)
+                (Type 'exit' or press Ctrl+] to end session • Ctrl+S for Private Mode)
               </div>
             </div>
           </div>
@@ -310,9 +310,9 @@ export default function QuickstartDocsPage() {
         <div className="my-10 p-5 rounded-lg border border-(--border-color) bg-(--card-bg) flex items-start gap-3.5">
           <InfoCircledIcon className="w-5 h-5 text-(--foreground) shrink-0 mt-0.5" />
           <div className="space-y-1 text-xs">
-            <div className="font-semibold text-(--foreground)">Safety Mode is Built-in</div>
+            <div className="font-semibold text-(--foreground)">Private Mode is Built-in</div>
             <p className="text-(--text-muted) leading-relaxed">
-              Pressing <kbd className="px-1.5 py-0.5 rounded border border-(--border-color) bg-(--background) font-mono text-(--foreground)">Ctrl+S</kbd> anytime during your session toggles Safety Mode. When enabled, sensitive credentials such as database passwords, API tokens, and JWTs are dynamically redacted from the web audit log.
+              Pressing <kbd className="px-1.5 py-0.5 rounded border border-(--border-color) bg-(--background) font-mono text-(--foreground)">Ctrl+S</kbd> anytime during your session toggles Private Mode. When enabled, sensitive commands and credentials such as database passwords, API tokens, and JWTs are dynamically redacted from the web audit log and collaborator streams.
             </p>
           </div>
         </div>

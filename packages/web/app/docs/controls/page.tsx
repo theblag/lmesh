@@ -87,7 +87,7 @@ export default function ControlsDocsPage() {
                       <kbd className="px-1.5 py-0.5 rounded border border-(--border-color) bg-(--background) font-mono text-(--foreground)">Ctrl+S</kbd>
                     </td>
                     <td className="py-3 px-4 font-mono whitespace-nowrap">Host CLI</td>
-                    <td className="py-3 px-4 font-mono text-(--text-subtle) whitespace-nowrap">Toggle Safety</td>
+                    <td className="py-3 px-4 font-mono text-(--text-subtle) whitespace-nowrap">Toggle Private</td>
                     <td className="py-3 px-4">Enables or disables automatic secrets redaction in collaborator viewports and audit logs.</td>
                   </tr>
                   <tr>
@@ -120,18 +120,18 @@ export default function ControlsDocsPage() {
           </div>
         </div>
 
-        {/* Safety Mode Detail */}
-        <section id="safety-mode" className="pt-14 space-y-4 scroll-mt-20">
+        {/* Private Mode Detail */}
+        <section id="private-mode" className="pt-14 space-y-4 scroll-mt-20">
           <div className="flex items-center justify-between">
             <h2 className="text-xl font-bold tracking-tight text-(--foreground) font-sans">
-              Safety Mode (Ctrl+S)
+              Private Mode (Ctrl+S)
             </h2>
             <span className="text-[11px] font-mono px-2 py-0.5 rounded border border-(--border-color) bg-(--card-bg) text-(--text-subtle)">
               security
             </span>
           </div>
           <p className="text-sm text-(--text-muted) leading-relaxed">
-            During live pairing, hosts often need to inspect environment variables, run migration scripts containing database connection URIs, or copy sensitive tokens. Safety Mode acts as an in-stream redaction proxy between the local PTY stdout and the outbound WebSocket relay.
+            During live pairing, hosts often need to inspect environment variables, run migration scripts containing database connection URIs, or copy sensitive tokens. Private Mode acts as an in-stream redaction proxy between the local PTY stdout and the outbound WebSocket relay.
           </p>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
@@ -182,7 +182,7 @@ export default function ControlsDocsPage() {
                 export DATABASE_URL=postgres://user:[REDACTED]@db.internal:5432/prod
               </div>
               <div className="text-[#555a68] text-[11px]">
-                [lmesh] Safety Mode active • 1 sensitive credential redacted from collaborator stream
+                [lmesh] Private Mode active • 1 sensitive credential redacted from collaborator stream
               </div>
             </div>
           </div>
@@ -324,8 +324,8 @@ export default function ControlsDocsPage() {
             </a>
           </li>
           <li>
-            <a href="#safety-mode" onClick={(e) => scrollToHeading(e, "safety-mode")} className="hover:text-(--foreground) transition-colors block">
-              Safety Mode (Ctrl+S)
+            <a href="#private-mode" onClick={(e) => scrollToHeading(e, "private-mode")} className="hover:text-(--foreground) transition-colors block">
+              Private Mode (Ctrl+S)
             </a>
           </li>
           <li>

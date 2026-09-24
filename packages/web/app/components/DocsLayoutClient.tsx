@@ -310,11 +310,11 @@ export function DocsLayoutClient({
                     <>
                       <li>
                         <a
-                          href="/docs/controls#safety-mode"
-                          onClick={(e) => handleAnchorClick(e, "/docs/controls#safety-mode")}
+                          href="/docs/controls#private-mode"
+                          onClick={(e) => handleAnchorClick(e, "/docs/controls#private-mode")}
                           className="block text-(--text-muted) hover:text-(--foreground) py-0.5 transition-colors"
                         >
-                          Safety Mode (Ctrl+S)
+                          Private Mode (Ctrl+S)
                         </a>
                       </li>
                       <li>

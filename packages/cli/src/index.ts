@@ -124,7 +124,7 @@ program
             console.log(`Host: @${userConfig.user.username}`);
             console.log(`Share this link with collaborators:`);
             console.log(`${webBaseUrl}/${sessionId}`);
-            console.log(`\x1b[90m(Type 'exit' or press Ctrl+] to end session • Ctrl+S for Safety Mode)\x1b[0m\n`);
+            console.log(`\x1b[90m(Type 'exit' or press Ctrl+] to end session • Ctrl+S for Private Mode)\x1b[0m\n`);
             startSession(ws);
             break;
           }
@@ -149,22 +149,18 @@ program
             if (notifications.length > 0) {
               const msg = notifications.join("\r\n");
               process.stderr.write(`\r\n${msg}\r\n`);
-              // Automatically refresh the shell prompt on a clean new line after any resize settling
-              setTimeout(() => {
-                if (ptySession) {
-                  ptySession.write("\r");
-                }
-              }, 350);
             }
             break;
           }
           case "terminal_resize": {
             const { cols, rows } = message.payload || {};
-            if (ptySession && cols && rows) {
+            if (ptySession && typeof cols === "number" && typeof rows === "number" && cols > 1 && rows > 0) {
               // Suppress host stdout during resize to avoid conpty repaint blank lines
               suppressHostOutput = true;
               if (suppressTimer) clearTimeout(suppressTimer);
-              ptySession.resize(cols, rows);
+              try {
+                ptySession.resize(cols, rows);
+              } catch (e) {}
               suppressTimer = setTimeout(() => {
                 suppressHostOutput = false;
               }, 300);
@@ -242,7 +238,7 @@ program
       );
 
       let hostCmdBuf = "";
-      let isHostSafetyMode = false;
+      let isHostPrivateMode = false;
 
       process.stdin.on("data", (key: string) => {
         // Ctrl+] (\x1d) escape sequence to exit lmesh share session
@@ -252,13 +248,13 @@ program
           process.exit(0);
         }
 
-        // Ctrl+S (\x13) escape sequence to toggle Safety Mode (redacting audit logs)
+        // Ctrl+S (\x13) escape sequence to toggle Private Mode (redacting audit logs)
         if (key === "\x13") {
-          isHostSafetyMode = !isHostSafetyMode;
-          if (isHostSafetyMode) {
-            process.stderr.write("\r\n\x1b[33m[lmesh] Safety Mode: ON (Commands will be redacted in audit logs)\x1b[0m\r\n");
+          isHostPrivateMode = !isHostPrivateMode;
+          if (isHostPrivateMode) {
+            process.stderr.write("\r\n\x1b[33m[lmesh] Private Mode: ON (Commands will be redacted in audit logs)\x1b[0m\r\n");
           } else {
-            process.stderr.write("\r\n\x1b[32m[lmesh] Safety Mode: OFF (Normal audit logging)\x1b[0m\r\n");
+            process.stderr.write("\r\n\x1b[32m[lmesh] Private Mode: OFF (Normal audit logging)\x1b[0m\r\n");
           }
           return;
         }
@@ -267,7 +263,7 @@ program
           const char = key.toLowerCase();
 
           if (char === "y") {
-            process.stderr.write(`\x1b[36my (Access granted)\x1b[0m\n`);
+            process.stderr.write(`\x1b[36my (Access granted. Press Enter to Continue.)\x1b[0m\n`);
             socket.send(
               JSON.stringify({
                 type: "control_grant",
@@ -276,16 +272,18 @@ program
             );
             isPromptingForControl = false;
             pendingGrantClientId = null;
-            if (ptySession) {
-              ptySession.write("\r");
-            }
           } else if (char === "n") {
-            process.stderr.write(`\x1b[36mn (Access denied)\x1b[0m\n`);
+            process.stderr.write(`\x1b[36mn (Access denied. Press Enter to Continue.)\x1b[0m\n`);
+            if (pendingGrantClientId && socket.readyState === WebSocket.OPEN) {
+              socket.send(
+                JSON.stringify({
+                  type: "control_deny",
+                  payload: { clientId: pendingGrantClientId },
+                })
+              );
+            }
             isPromptingForControl = false;
             pendingGrantClientId = null;
-            if (ptySession) {
-              ptySession.write("\r");
-            }
           }
           return;
         }
@@ -306,7 +304,8 @@ program
                 type: "host_command",
                 payload: { 
                   command: cleanCmd,
-                  isSafetyMode: isHostSafetyMode
+                  isPrivateMode: isHostPrivateMode,
+                  isSafetyMode: isHostPrivateMode
                 },
               })
             );

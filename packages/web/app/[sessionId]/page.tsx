@@ -10,7 +10,9 @@ import {
   Share1Icon,
   GearIcon,
   LockClosedIcon,
-  DownloadIcon} from "@radix-ui/react-icons";
+  DownloadIcon,
+  Cross2Icon
+} from "@radix-ui/react-icons";
 
 import { ThemeProvider } from "../components/ThemeContext";
 import { ThemeToggle } from "../components/ThemeToggle";
@@ -85,14 +87,17 @@ export default function SessionPage({ params }: { params: Promise<{ sessionId: s
   const [isReadOnlySession, setIsReadOnlySession] = useState(false);
   const [socketStatus, setSocketStatus] = useState<"connecting" | "connected" | "disconnected">("connecting");
   const [isHost, setIsHost] = useState(false);
+  const [isControlPending, setIsControlPending] = useState(false);
+  const [denialNotice, setDenialNotice] = useState<string | null>(null);
+  const pendingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Safety Mode State (Redacts sensitive commands in audit logging)
-  const [safetyMode, setSafetyMode] = useState(false);
-  const safetyModeRef = useRef(false);
+  // Private Mode State (Redacts sensitive commands in audit logging)
+  const [privateMode, setPrivateMode] = useState(false);
+  const privateModeRef = useRef(false);
 
   useEffect(() => {
-    safetyModeRef.current = safetyMode;
-  }, [safetyMode]);
+    privateModeRef.current = privateMode;
+  }, [privateMode]);
 
   // UI Modal States
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
@@ -131,6 +136,7 @@ export default function SessionPage({ params }: { params: Promise<{ sessionId: s
   // DOM elements references
   const terminalContainerRef = useRef<HTMLDivElement>(null);
   const termRef = useRef<any>(null);
+  const fitAddonRef = useRef<any>(null);
   const socketRef = useRef<WebSocket | null>(null);
   const inputBufferRef = useRef("");
   const hasControlRef = useRef(false);
@@ -153,13 +159,28 @@ export default function SessionPage({ params }: { params: Promise<{ sessionId: s
     if (!isJoined || !username || !sessionId) return;
 
     let active = true;
-    let fitAddon: any;
+    let resizeObserver: ResizeObserver | null = null;
 
     const wsUrl = getWsUrl();
     setSocketStatus("connecting");
     
     const socket = new WebSocket(wsUrl);
     socketRef.current = socket;
+
+    const sendResize = () => {
+      if (fitAddonRef.current && termRef.current) {
+        try {
+          fitAddonRef.current.fit();
+          const { cols, rows } = termRef.current;
+          if (cols > 1 && rows > 0 && socketRef.current && socketRef.current.readyState === WebSocket.OPEN) {
+            socketRef.current.send(JSON.stringify({
+              type: "terminal_resize",
+              payload: { cols, rows }
+            }));
+          }
+        } catch (e) {}
+      }
+    };
 
     // Load Terminal dynamically to avoid SSR execution crashes
     async function setupTerminal() {
@@ -174,8 +195,12 @@ export default function SessionPage({ params }: { params: Promise<{ sessionId: s
           cursorBlink: true,
           cursorStyle: cursorStyle,
           scrollback: 10000,
-          convertEol: true,
-          smoothScrollDuration: 100,
+          convertEol: false,
+          windowsPty: {
+            backend: "conpty",
+            buildNumber: 22621
+          },
+          smoothScrollDuration: 0,
           theme: {
             background: "#030303",
             foreground: "#ededed",
@@ -192,32 +217,32 @@ export default function SessionPage({ params }: { params: Promise<{ sessionId: s
           },
           fontFamily: "var(--font-geist-mono), monospace",
           fontSize: fontSize,
-          lineHeight: 1.4,
+          lineHeight: 1.2,
         });
 
-        fitAddon = new FitAddon();
+        const fitAddon = new FitAddon();
         term.loadAddon(fitAddon);
-
-        const sendResize = () => {
-          if (fitAddon && term) {
-            try {
-              fitAddon.fit();
-              if (socket.readyState === WebSocket.OPEN) {
-                socket.send(JSON.stringify({
-                  type: "terminal_resize",
-                  payload: { cols: term.cols, rows: term.rows }
-                }));
-              }
-            } catch (e) {}
-          }
-        };
+        fitAddonRef.current = fitAddon;
+        termRef.current = term;
 
         if (terminalContainerRef.current) {
           term.open(terminalContainerRef.current);
+          requestAnimationFrame(() => sendResize());
           setTimeout(sendResize, 100);
+
+          if (typeof ResizeObserver !== "undefined") {
+            resizeObserver = new ResizeObserver(() => {
+              requestAnimationFrame(() => sendResize());
+            });
+            resizeObserver.observe(terminalContainerRef.current);
+          }
         }
 
-        termRef.current = term;
+        if (typeof document !== "undefined" && document.fonts) {
+          document.fonts.ready.then(() => {
+            requestAnimationFrame(() => sendResize());
+          });
+        }
 
         // Listen to local typing input inside xterm.js
         term.onData((data) => {
@@ -226,7 +251,8 @@ export default function SessionPage({ params }: { params: Promise<{ sessionId: s
               type: "terminal_data",
               payload: { 
                 data,
-                isSafetyMode: safetyModeRef.current
+                isPrivateMode: privateModeRef.current,
+                isSafetyMode: privateModeRef.current
               }
             }));
 
@@ -241,7 +267,7 @@ export default function SessionPage({ params }: { params: Promise<{ sessionId: s
                   timestamp: timeStr,
                   userName: username,
                   userRole: isHost ? "host" : "collaborator",
-                  command: safetyModeRef.current ? "[REDACTED - SAFETY MODE]" : cmd,
+                  command: privateModeRef.current ? "[REDACTED - PRIVATE MODE]" : cmd,
                   status: "executed"
                 };
                 setCommandLogs((prev) => [newEntry, ...prev]);
@@ -259,10 +285,6 @@ export default function SessionPage({ params }: { params: Promise<{ sessionId: s
 
         // Handle browser resize
         window.addEventListener("resize", sendResize);
-
-        return () => {
-          window.removeEventListener("resize", sendResize);
-        };
       } catch (err) {
         console.error("Failed to load terminal bundle:", err);
       }
@@ -281,6 +303,8 @@ export default function SessionPage({ params }: { params: Promise<{ sessionId: s
           password: sessionPasswordInput || undefined
         }
       }));
+      // Immediately tell host PTY our exact terminal dimensions
+      sendResize();
     };
 
     socket.onmessage = (event) => {
@@ -294,6 +318,7 @@ export default function SessionPage({ params }: { params: Promise<{ sessionId: s
             if (role === "host") {
               setIsHost(true);
             }
+            setTimeout(() => sendResize(), 50);
             break;
           }
 
@@ -325,8 +350,26 @@ export default function SessionPage({ params }: { params: Promise<{ sessionId: s
             break;
           }
 
+          case "control_deny": {
+            setIsControlPending(false);
+            if (pendingTimeoutRef.current) {
+              clearTimeout(pendingTimeoutRef.current);
+              pendingTimeoutRef.current = null;
+            }
+            setDenialNotice(message.payload?.message || "Host denied control request.");
+            setTimeout(() => {
+              setDenialNotice(null);
+            }, 5000);
+            break;
+          }
+
           case "error": {
             const errorMsg = message.payload.message;
+            setIsControlPending(false);
+            if (pendingTimeoutRef.current) {
+              clearTimeout(pendingTimeoutRef.current);
+              pendingTimeoutRef.current = null;
+            }
             if (errorMsg.includes("read-only")) {
               setIsReadOnlySession(true);
             }
@@ -343,6 +386,11 @@ export default function SessionPage({ params }: { params: Promise<{ sessionId: s
 
     socket.onclose = () => {
       setSocketStatus("disconnected");
+      setIsControlPending(false);
+      if (pendingTimeoutRef.current) {
+        clearTimeout(pendingTimeoutRef.current);
+        pendingTimeoutRef.current = null;
+      }
       if (termRef.current) {
         termRef.current.writeln("\r\n\x1b[31mConnection closed. Host disconnected or session terminated.\x1b[0m");
       }
@@ -354,6 +402,10 @@ export default function SessionPage({ params }: { params: Promise<{ sessionId: s
 
     return () => {
       active = false;
+      if (pendingTimeoutRef.current) {
+        clearTimeout(pendingTimeoutRef.current);
+        pendingTimeoutRef.current = null;
+      }
       if (socketRef.current) {
         socketRef.current.close();
       }
@@ -368,6 +420,16 @@ export default function SessionPage({ params }: { params: Promise<{ sessionId: s
     if (clientId && controlHolderId) {
       const activeControl = clientId === controlHolderId;
       setHasControl(activeControl);
+      if (activeControl) {
+        setIsControlPending(false);
+        setDenialNotice(null);
+        if (pendingTimeoutRef.current) {
+          clearTimeout(pendingTimeoutRef.current);
+          pendingTimeoutRef.current = null;
+        }
+      } else {
+        setIsControlPending(false);
+      }
     } else {
       setHasControl(false);
     }
@@ -377,11 +439,48 @@ export default function SessionPage({ params }: { params: Promise<{ sessionId: s
   useEffect(() => {
     if (termRef.current) {
       termRef.current.options.fontSize = fontSize;
+      if (fitAddonRef.current) {
+        try {
+          fitAddonRef.current.fit();
+          const { cols, rows } = termRef.current;
+          if (cols > 1 && rows > 0 && socketRef.current && socketRef.current.readyState === WebSocket.OPEN) {
+            socketRef.current.send(JSON.stringify({
+              type: "terminal_resize",
+              payload: { cols, rows }
+            }));
+          }
+        } catch (e) {}
+      }
     }
   }, [fontSize]);
 
+  const cancelControlRequest = () => {
+    setIsControlPending(false);
+    if (pendingTimeoutRef.current) {
+      clearTimeout(pendingTimeoutRef.current);
+      pendingTimeoutRef.current = null;
+    }
+  };
+
   const requestControl = () => {
     if (socketRef.current && socketRef.current.readyState === WebSocket.OPEN) {
+      setDenialNotice(null);
+      setIsControlPending(true);
+
+      if (pendingTimeoutRef.current) {
+        clearTimeout(pendingTimeoutRef.current);
+      }
+      pendingTimeoutRef.current = setTimeout(() => {
+        setIsControlPending((prev) => {
+          if (prev) {
+            setDenialNotice("No response from host (request timed out)");
+            setTimeout(() => setDenialNotice(null), 5000);
+            return false;
+          }
+          return prev;
+        });
+      }, 60000);
+
       socketRef.current.send(JSON.stringify({
         type: "control_request",
         payload: {}
@@ -393,6 +492,16 @@ export default function SessionPage({ params }: { params: Promise<{ sessionId: s
     if (socketRef.current && socketRef.current.readyState === WebSocket.OPEN) {
       socketRef.current.send(JSON.stringify({
         type: "control_grant",
+        payload: { clientId: targetClientId }
+      }));
+    }
+    setPendingApproval(null);
+  };
+
+  const handleDenyControl = (targetClientId: string) => {
+    if (socketRef.current && socketRef.current.readyState === WebSocket.OPEN) {
+      socketRef.current.send(JSON.stringify({
+        type: "control_deny",
         payload: { clientId: targetClientId }
       }));
     }
@@ -438,6 +547,20 @@ export default function SessionPage({ params }: { params: Promise<{ sessionId: s
     } else {
       document.exitFullscreen().catch(() => {});
     }
+    setTimeout(() => {
+      if (fitAddonRef.current && termRef.current && socketRef.current?.readyState === WebSocket.OPEN) {
+        try {
+          fitAddonRef.current.fit();
+          const { cols, rows } = termRef.current;
+          if (cols > 1 && rows > 0) {
+            socketRef.current.send(JSON.stringify({
+              type: "terminal_resize",
+              payload: { cols, rows }
+            }));
+          }
+        } catch (e) {}
+      }
+    }, 150);
   };
 
   // Check session validity
@@ -574,7 +697,7 @@ export default function SessionPage({ params }: { params: Promise<{ sessionId: s
             </div>
 
             {/* E2EE indicator badge */}
-            <button
+            {/* <button
               onClick={() => setIsSettingsOpen(true)}
               className={`hidden sm:flex items-center gap-1.5 px-3 py-1 rounded-full border text-xs font-sans font-medium transition-colors cursor-pointer ${
                 e2eEncrypted 
@@ -585,7 +708,7 @@ export default function SessionPage({ params }: { params: Promise<{ sessionId: s
             >
               <LockClosedIcon className="w-3.5 h-3.5" />
               {e2eEncrypted ? "E2EE Secured" : "Encrypted Ready"}
-            </button>
+            </button> */}
           </div>
 
           {/* Right header presence, control state, settings gear & theme toggle */}
@@ -594,24 +717,54 @@ export default function SessionPage({ params }: { params: Promise<{ sessionId: s
             {/* Status info/controls */}
             <div className="flex items-center gap-2">
               {hasControl ? (
-                <div className="flex items-center gap-2">
-                  <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 font-sans text-xs rounded-full font-medium">
-                    <KeyboardIcon className="w-3.5 h-3.5" />
-                    Active Typing
-                  </span>
-                  {isHost && (
-                    <button
-                      onClick={handleRevokeControl}
-                      className="text-xs font-sans text-rose-400 hover:text-rose-300 font-medium cursor-pointer"
-                    >
-                      Revoke
-                    </button>
-                  )}
-                </div>
+                <button
+                  onClick={handleRevokeControl}
+                  className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-md bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/30 hover:border-rose-500/50 text-rose-400 hover:text-rose-300 font-sans text-xs font-semibold tracking-tight transition-all cursor-pointer shadow-xs"
+                  title="Release terminal control back to host"
+                >
+                  <Cross2Icon className="w-3.5 h-3.5" />
+                  Release Control
+                </button>
+              ) : isHost && controlHolderId ? (
+                <button
+                  onClick={handleRevokeControl}
+                  className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-md bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/30 hover:border-rose-500/50 text-rose-400 hover:text-rose-300 font-sans text-xs font-semibold tracking-tight transition-all cursor-pointer shadow-xs"
+                  title="Revoke control from collaborator"
+                >
+                  <Cross2Icon className="w-3.5 h-3.5" />
+                  Revoke Control
+                </button>
               ) : isReadOnlySession ? (
                 <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-white/4 border border-white/10 text-white/50 font-sans text-xs rounded-full font-medium">
                   Read-Only
                 </span>
+              ) : isControlPending ? (
+                <div className="flex items-center gap-1.5 animate-in fade-in duration-200">
+                  <span className="inline-flex items-center gap-2 px-3 py-1 bg-white/6 border border-white/12 text-white/80 font-sans text-xs rounded-full font-medium shadow-xs">
+                    <span className="w-1.5 h-1.5 rounded-full bg-blue-400" />
+                    Requested &bull; Waiting for host...
+                  </span>
+                  <button
+                    onClick={cancelControlRequest}
+                    className="p-1 rounded-md text-white/40 hover:text-white/90 hover:bg-white/10 transition-colors cursor-pointer"
+                    title="Cancel request"
+                  >
+                    <Cross2Icon className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              ) : denialNotice ? (
+                <div className="flex items-center gap-1.5 animate-in fade-in duration-200">
+                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-rose-500/10 border border-rose-500/30 text-rose-300 font-sans text-xs rounded-full font-medium">
+                    {denialNotice}
+                  </span>
+                  <button
+                    onClick={() => setDenialNotice(null)}
+                    className="p-1 rounded-md text-white/40 hover:text-white/90 hover:bg-white/10 transition-colors cursor-pointer"
+                    title="Dismiss"
+                  >
+                    <Cross2Icon className="w-3.5 h-3.5" />
+                  </button>
+                </div>
               ) : (
                 <button
                   onClick={requestControl}
@@ -647,11 +800,11 @@ export default function SessionPage({ params }: { params: Promise<{ sessionId: s
               <GearIcon className="w-4 h-4" />
             </button>
 
-            {/* Safety Mode Active Badge */}
-            {safetyMode && (
-              <span className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-medium border border-amber-500/40 bg-amber-500/10 text-amber-300">
-                <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
-                SAFETY MODE
+            {/* Private Mode Active Badge */}
+            {privateMode && (
+              <span className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-medium border border-purple-500/40 bg-purple-500/10 text-purple-300">
+                <span className="w-1.5 h-1.5 rounded-full bg-purple-400 animate-pulse" />
+                PRIVATE MODE
               </span>
             )}
 
@@ -668,11 +821,8 @@ export default function SessionPage({ params }: { params: Promise<{ sessionId: s
           {/* Quick Action Toolbar */}
           <TerminalToolbar
             hasControl={hasControl}
-            isReadOnly={isReadOnlySession}
-            safetyMode={safetyMode}
-            onToggleSafetyMode={() => setSafetyMode(prev => !prev)}
-            onRequestControl={requestControl}
-            onReleaseControl={handleRevokeControl}
+            privateMode={privateMode}
+            onTogglePrivateMode={() => setPrivateMode(prev => !prev)}
             onClearTerminal={handleClearTerminal}
             onCopyBuffer={handleCopyBuffer}
             onToggleFullscreen={handleToggleFullscreen}
@@ -692,11 +842,8 @@ export default function SessionPage({ params }: { params: Promise<{ sessionId: s
           
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-sans font-semibold tracking-tight text-white/40 uppercase">Collaborators</span>
-              <span className="text-[11px] font-sans font-medium text-emerald-400 flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                Live
-              </span>
+              <span className="text-xs font-sans font-semibold tracking-tight text-white/40 ">Collaborators Live:</span>
+              
             </div>
             
             <div className="space-y-2">
@@ -750,7 +897,7 @@ export default function SessionPage({ params }: { params: Promise<{ sessionId: s
             </div>
           </div>
 
-          <div className="border-t border-white/8 pt-6 space-y-4">
+          {/* <div className="border-t border-white/8 pt-6 space-y-4">
             <span className="text-xs font-sans font-semibold tracking-tight text-white/40 uppercase">Host Relay Status</span>
             <div className="space-y-2 text-xs font-sans text-white/60">
               <div className="flex justify-between py-1 border-b border-white/4">
@@ -766,7 +913,7 @@ export default function SessionPage({ params }: { params: Promise<{ sessionId: s
                 <span className="text-white font-medium">{isReadOnlySession ? "Read-Only" : "Token Passing"}</span>
               </div>
             </div>
-          </div>
+          </div> */}
         </aside>
       </main>
 
@@ -804,7 +951,7 @@ export default function SessionPage({ params }: { params: Promise<{ sessionId: s
       <CommandApprovalModal
         request={pendingApproval}
         onApprove={(id) => handleGrantControl(id)}
-        onDeny={() => setPendingApproval(null)}
+        onDeny={(id) => handleDenyControl(id)}
       />
 
     </div>

@@ -30,6 +30,7 @@ export type MessageType =
   | 'terminal_resize'
   | 'control_request'
   | 'control_grant'
+  | 'control_deny'
   | 'control_revoke'
   | 'host_command'
   | 'error';

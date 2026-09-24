@@ -210,13 +210,14 @@ wss.on("connection", (ws: WebSocket) => {
         }
         case "host_command": {
           if (!currentSessionId) return;
-          const { command, isSafetyMode } = message.payload || {};
+          const { command } = message.payload || {};
+          const isPrivate = !!(message.payload?.isPrivateMode || message.payload?.isSafetyMode);
           const cleaned = cleanAnsi(command);
           if (cleaned) {
             const session = await store.getSession(currentSessionId);
             const hostName = session?.hostId ? session.hostId.replace(/^@+/, '') : "Host";
-            const commandToLog = isSafetyMode ? "[REDACTED - SAFETY MODE]" : cleaned;
-            console.log(`[Server] Received host_command for session ${currentSessionId} from ${hostName}: "${commandToLog}"${isSafetyMode ? " (Safety Mode active)" : ""}`);
+            const commandToLog = isPrivate ? "[REDACTED - PRIVATE MODE]" : cleaned;
+            console.log(`[Server] Received host_command for session ${currentSessionId} from ${hostName}: "${commandToLog}"${isPrivate ? " (Private Mode active)" : ""}`);
             logCommand(currentSessionId, hostName, commandToLog)
               .then((success) => console.log(`[Server] DB log success: ${success}`))
               .catch((err) => console.error("[Server] DB log error:", err));
@@ -230,7 +231,7 @@ wss.on("connection", (ws: WebSocket) => {
           if (!session) return;
 
           const dataStr = message.payload?.data || "";
-          const isSafetyMode = !!message.payload?.isSafetyMode;
+          const isPrivate = !!(message.payload?.isPrivateMode || message.payload?.isSafetyMode);
 
           // Only buffer command logging for collaborators (non-hosts), 
           // because isHost terminal_data is raw PTY stdout stream with ANSI codes.
@@ -241,7 +242,7 @@ wss.on("connection", (ws: WebSocket) => {
               const rawCommand = (currentBuf + dataStr).replace(/[\r\n]+/g, "").trim();
               const fullCommand = cleanAnsi(rawCommand);
               if (fullCommand) {
-                const commandToLog = isSafetyMode ? "[REDACTED - SAFETY MODE]" : fullCommand;
+                const commandToLog = isPrivate ? "[REDACTED - PRIVATE MODE]" : fullCommand;
                 logCommand(currentSessionId, clientName, commandToLog).catch(console.error);
               }
               commandBuffers.set(currentClientId, "");
@@ -314,6 +315,24 @@ wss.on("connection", (ws: WebSocket) => {
             await updateParticipantRole(currentSessionId, client.name, 'collaborator');
             console.log(`Control granted to ${client.name} (${clientId}) in session ${currentSessionId}`);
             await sendSessionUpdate(currentSessionId);
+          }
+          break;
+        }
+        case "control_deny": {
+          if (!isHost || !currentSessionId) return;
+          const { clientId } = message.payload || {};
+          const session = await store.getSession(currentSessionId);
+          if (!session) return;
+          if (clientId && session.clients.has(clientId)) {
+            const client = session.clients.get(clientId)!;
+            if (client.ws.readyState === WebSocket.OPEN) {
+              client.ws.send(
+                JSON.stringify({
+                  type: "control_deny",
+                  payload: { message: "Host denied control request." },
+                })
+              );
+            }
           }
           break;
         }

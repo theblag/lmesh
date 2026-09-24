@@ -43,7 +43,7 @@ LMESH ensures strict host sovereignty through a **single-token write mutex**: re
 - **Single-Token Concurrency Mutex**: Strict token gating ensures only one participant holds write access at any time, eliminating keystroke race conditions.
 - **Physical Host Preemption Guard**: The host retains root authority. Any local physical keystroke immediately revokes remote write tokens.
 - **Dual Terminal Synchronization**: Synchronizes raw PTY buffer dimensions and `SIGWINCH` resize signals between OS pseudo-terminals (`ConPTY` on Windows, `POSIX OpenPTY` on Linux/macOS) and remote `xterm.js` viewports.
-- **Safety Mode (Ctrl+S)**: In-session hotkey that dynamically redacts sensitive environment variables, passwords, and API credentials from the persistent audit trail.
+- **Private Mode (Ctrl+S)**: In-session hotkey that dynamically redacts sensitive environment variables, passwords, and API credentials from the persistent audit trail.
 - **Horizontal Relay Scalability**: Redis Pub/Sub cluster layer handles cross-instance broadcast and multi-node relay synchronization with instance deduplication.
 - **GitHub Device Authorization**: Secure login via GitHub OAuth Device Flow on the CLI and standard OAuth 2.0 on the web interface.
 
@@ -235,7 +235,7 @@ lmesh share -u wss://relay.yourdomain.com
 | Hotkey | Action | Description |
 | :--- | :--- | :--- |
 | `Ctrl+]` or `exit` | **Terminate Session** | Instantly closes the session and disconnects all collaborators. |
-| `Ctrl+S` | **Safety Mode** | Toggles audit-log redaction for passwords, API tokens, and secrets. |
+| `Ctrl+S` | **Private Mode** | Toggles audit-log redaction for passwords, API tokens, and secrets. |
 | `y` / `n` | **Control Approval** | Responds to incoming remote write-token handover requests. |
 | *Any physical key* | **Host Preemption** | Immediately revokes collaborator input and restores exclusive host control. |
 
@@ -246,7 +246,7 @@ lmesh share -u wss://relay.yourdomain.com
 1. **Outbound-Only Connectivity**: The CLI never opens an inbound listening socket. Attacks targeting local open ports are completely bypassed.
 2. **Strict Single-Token Concurrency**: The relay server enforces token-gated input. Unapproved keystrokes sent from unauthorized web sockets are rejected.
 3. **Physical Host Sovereignty**: The host retains ultimate authority over their shell. Remote participants can never lock out the host.
-4. **Audit Trail Redaction**: When Safety Mode (`Ctrl+S`) is active, commands executed in the session are redacted before being persisted to the database.
+4. **Audit Trail Redaction**: When Private Mode (`Ctrl+S`) is active, commands executed in the session are redacted before being persisted to the database.
 5. **Anti-Nesting Lock**: Recursive `lmesh share` execution inside an active session is detected and blocked via environment guards (`LMESH_SESSION`).
 
 ---
