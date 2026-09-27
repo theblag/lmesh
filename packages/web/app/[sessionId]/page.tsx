@@ -831,6 +831,23 @@ export default function SessionPage({ params }: { params: Promise<{ sessionId: s
             onSendKey={handleSendKeySequence}
           />
           
+          {/* Disconnected Session Banner */}
+          {socketStatus === "disconnected" && (
+            <div className="z-20 px-4 py-2.5 bg-rose-950/80 border-b border-rose-500/30 backdrop-blur-md flex items-center justify-between gap-3 text-xs text-rose-200 animate-in fade-in slide-in-from-top-2 duration-300">
+              <div className="flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-rose-500 animate-ping" />
+                <span className="font-medium">Session Terminated</span>
+                <span className="text-rose-300/70 hidden sm:inline">&bull; The host has disconnected or ended this session.</span>
+              </div>
+              <button
+                onClick={() => router.push("/")}
+                className="px-3 py-1 rounded bg-rose-500/20 hover:bg-rose-500/30 border border-rose-500/40 text-rose-100 hover:text-white transition-colors cursor-pointer font-medium text-[11px] shrink-0"
+              >
+                Return Home
+              </button>
+            </div>
+          )}
+
           {/* xterm canvas container - UNTOUCHED TERMINAL CANVAS */}
           <div className="flex-1 w-full h-full relative">
             <div ref={terminalContainerRef} className="w-full h-full absolute inset-0" />
@@ -842,8 +859,8 @@ export default function SessionPage({ params }: { params: Promise<{ sessionId: s
           
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-sans font-semibold tracking-tight text-white/40 ">Collaborators Live:</span>
-              
+              <span className="text-xs font-sans font-semibold tracking-tight text-white/40">Collaborators Live:</span>
+              <span className="text-[11px] font-mono text-white/30">{collaborators.length + 1}</span>
             </div>
             
             <div className="space-y-2">
@@ -894,6 +911,22 @@ export default function SessionPage({ params }: { params: Promise<{ sessionId: s
                   </div>
                 </div>
               ))}
+
+              {/* Empty state when no guest collaborators have joined */}
+              {collaborators.length === 0 && (
+                <div className="pt-3 pb-2 px-3 rounded-lg border border-dashed border-white/8 bg-white/[0.01] text-center space-y-2 mt-2">
+                  <p className="text-[11px] text-white/40 leading-relaxed font-sans">
+                    No other collaborators have joined yet.
+                  </p>
+                  <button
+                    onClick={() => setIsShareOpen(true)}
+                    className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-white/5 hover:bg-white/10 border border-white/10 text-white/70 hover:text-white text-[11px] font-sans font-medium transition-colors cursor-pointer"
+                  >
+                    <Share1Icon className="w-3 h-3" />
+                    <span>Invite Collaborators</span>
+                  </button>
+                </div>
+              )}
             </div>
           </div>
 
