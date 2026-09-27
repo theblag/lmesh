@@ -232,8 +232,14 @@ program
         },
         (exitCode) => {
           console.log(`\nLocal shell exited with code ${exitCode}. Ending session.`);
+          if (socket.readyState === WebSocket.OPEN) {
+            try {
+              socket.send(JSON.stringify({ type: "session_terminate" }));
+              socket.close(1000, "Shell exited");
+            } catch {}
+          }
           cleanup();
-          process.exit(exitCode);
+          setTimeout(() => process.exit(exitCode), 100);
         }
       );
 
@@ -244,8 +250,15 @@ program
         // Ctrl+] (\x1d) escape sequence to exit lmesh share session
         if (key === "\x1d") {
           process.stderr.write("\n\x1b[33m[lmesh] Exiting session via Ctrl+]...\x1b[0m\n");
+          if (socket.readyState === WebSocket.OPEN) {
+            try {
+              socket.send(JSON.stringify({ type: "session_terminate" }));
+              socket.close(1000, "Host exit");
+            } catch {}
+          }
           cleanup();
-          process.exit(0);
+          setTimeout(() => process.exit(0), 100);
+          return;
         }
 
         // Ctrl+S (\x13) escape sequence to toggle Private Mode (redacting audit logs)

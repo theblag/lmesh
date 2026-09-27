@@ -33,6 +33,8 @@ export type MessageType =
   | 'control_deny'
   | 'control_revoke'
   | 'host_command'
+  | 'session_terminate'
+  | 'session_terminated'
   | 'error';
 export interface MessageEnvelope {
   type: MessageType;

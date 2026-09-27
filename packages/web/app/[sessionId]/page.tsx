@@ -363,8 +363,21 @@ export default function SessionPage({ params }: { params: Promise<{ sessionId: s
             break;
           }
 
+          case "session_terminated": {
+            setSocketStatus("disconnected");
+            setIsControlPending(false);
+            if (pendingTimeoutRef.current) {
+              clearTimeout(pendingTimeoutRef.current);
+              pendingTimeoutRef.current = null;
+            }
+            if (termRef.current) {
+              termRef.current.writeln(`\r\n\x1b[31m[lmesh] ${message.payload?.message || "Host disconnected. Session ended."}\x1b[0m`);
+            }
+            break;
+          }
+
           case "error": {
-            const errorMsg = message.payload.message;
+            const errorMsg = message.payload?.message || "";
             setIsControlPending(false);
             if (pendingTimeoutRef.current) {
               clearTimeout(pendingTimeoutRef.current);
@@ -372,6 +385,9 @@ export default function SessionPage({ params }: { params: Promise<{ sessionId: s
             }
             if (errorMsg.includes("read-only")) {
               setIsReadOnlySession(true);
+            }
+            if (errorMsg.includes("Host disconnected") || errorMsg.includes("Session ended")) {
+              setSocketStatus("disconnected");
             }
             if (termRef.current) {
               termRef.current.writeln(`\r\n\x1b[31m[Error] ${errorMsg}\x1b[0m`);

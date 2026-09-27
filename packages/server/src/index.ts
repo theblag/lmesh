@@ -353,6 +353,29 @@ wss.on("connection", (ws: WebSocket) => {
           await sendSessionUpdate(currentSessionId);
           break;
         }
+        case "session_terminate": {
+          if (!isHost || !currentSessionId) return;
+          console.log(`Host requested session termination for ${currentSessionId}`);
+          await broadcastToSession(
+            currentSessionId,
+            {
+              type: "session_terminated",
+              payload: { message: "Host disconnected. Session ended." },
+            },
+            "host"
+          );
+          const session = await store.getSession(currentSessionId);
+          if (session) {
+            for (const client of session.clients.values()) {
+              try {
+                client.ws.close(1000, "Session ended");
+              } catch {}
+            }
+          }
+          await store.deleteSession(currentSessionId);
+          endDBSession(currentSessionId).catch((err) => console.error("Error ending DB session:", err));
+          break;
+        }
         default:
           console.warn(`Unknown message type: ${message.type}`);
       }
@@ -368,7 +391,7 @@ wss.on("connection", (ws: WebSocket) => {
       await broadcastToSession(
         currentSessionId,
         {
-          type: "error",
+          type: "session_terminated",
           payload: { message: "Host disconnected. Session ended." },
         },
         "host"
@@ -376,13 +399,15 @@ wss.on("connection", (ws: WebSocket) => {
       const session = await store.getSession(currentSessionId);
       if (session) {
         for (const client of session.clients.values()) {
-          client.ws.close();
+          try {
+            client.ws.close(1000, "Host disconnected");
+          } catch {}
         }
       }
       await store.deleteSession(currentSessionId);
 
-      //Mark session as ended in Neon DB
-      await endDBSession(currentSessionId);
+      // Mark session as ended in Neon DB (non-blocking)
+      endDBSession(currentSessionId).catch((err) => console.error("Error ending DB session:", err));
 
     } else if (currentClientId) {
       console.log(`Client ${currentClientId} disconnected from session ${currentSessionId}`);
