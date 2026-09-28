@@ -5,13 +5,14 @@ import { WebSocket } from "ws";
 import { Command } from "commander";
 import { loginCommand, logoutCommand, whoamiCommand } from "./auth.js";
 import { readConfig } from "./config.js";
+import { DEFAULT_RELAY_WS_URL, DEFAULT_WEB_URL } from "./constants.js";
 
 const program = new Command();
 
 program
   .name("lmesh")
   .description("Live Multi-user Execution Shell CLI")
-  .version("1.0.0");
+  .version("1.0.1");
 
 // Subcommand: lmesh login
 program
@@ -41,9 +42,9 @@ program
 program
   .command("share")
   .description("Share your local terminal session")
-  .option("-p, --port <number>", "Relay server port", process.env.LMESH_RELAY_PORT || "3001")
-  .option("-h, --host <string>", "Relay server host", process.env.LMESH_RELAY_HOST || "localhost")
-  .option("-u, --url <string>", "Relay server WebSocket URL (e.g. wss://lmesh-relay.onrender.com)")
+  .option("-p, --port <number>", "Relay server port (local dev)")
+  .option("-h, --host <string>", "Relay server host (local dev)")
+  .option("-u, --url <string>", "Relay server WebSocket URL (defaults to wss://lmesh.onrender.com)")
   .option("-w, --password <string>", "Password to protect the session")
   .option("-r, --readonly", "Make the session read-only (collaborators cannot request control)")
   .action((options) => {
@@ -75,8 +76,10 @@ program
         : sUrl.startsWith("http://")
         ? sUrl.replace(/^http:\/\//, "ws://")
         : sUrl;
+    } else if (options.host || options.port) {
+      wsUrl = `ws://${options.host || "localhost"}:${options.port || "3001"}`;
     } else {
-      wsUrl = `ws://${options.host}:${options.port}`;
+      wsUrl = DEFAULT_RELAY_WS_URL;
     }
 
     console.log(`Authenticated as \x1b[36m@${userConfig.user.username}\x1b[0m`);
@@ -119,7 +122,7 @@ program
               process.env.LMESH_WEB_URL ||
               (wsUrl.includes("localhost") || wsUrl.includes("127.0.0.1")
                 ? "http://localhost:3000"
-                : "https://lmesh.vercel.app");
+                : DEFAULT_WEB_URL);
             console.log(`Session created successfully!`);
             console.log(`Host: @${userConfig.user.username}`);
             console.log(`Share this link with collaborators:`);

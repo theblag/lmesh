@@ -1,15 +1,42 @@
 {
-  "name": "cli",
-  "version": "1.0.0",
+  "name": "lmesh-cli",
+  "version": "1.0.1",
+  "description": "Live multi-user execution shell over secure WebSockets",
   "main": "dist/index.js",
   "bin": {
-    "lmesh": "./dist/index.js"
+    "lmesh": "dist/index.js",
+    "lmesh-cli": "dist/index.js"
   },
   "type": "module",
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "scripts": {
     "dev": "tsx watch src/index.ts",
-    "build": "tsc"
+    "build": "tsc",
+    "prepublishOnly": "npm run build"
   },
+  "keywords": [
+    "terminal",
+    "collaboration",
+    "remote-pairing",
+    "pty",
+    "xterm",
+    "websocket",
+    "shell",
+    "cli"
+  ],
+  "author": "theblag",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/theblag/lmesh.git"
+  },
+  "homepage": "https://lmesh.vercel.app",
   "dependencies": {
     "commander": "^12.1.0",
     "node-pty": "^1.0.0",

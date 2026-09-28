@@ -1,0 +1,4 @@
+# Ignore TypeScript source files and tsconfig
+src/
+tsconfig.json
+*.log

@@ -1,6 +1,7 @@
 import open from "open";
 import { readConfig, writeConfig, clearConfig } from "./config.js";
-const SERVER_URL = process.env.LMESH_SERVER_URL || "http://localhost:3001";
+import { DEFAULT_SERVER_URL } from "./constants.js";
+const SERVER_URL = process.env.LMESH_SERVER_URL || DEFAULT_SERVER_URL;
 /**
  * Perform GitHub Device Flow Login for CLI
  */
