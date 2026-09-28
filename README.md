@@ -106,9 +106,48 @@ flowchart TD
     IngressGw <==>|"Multiplexed WSS<br/>(Binary Chunks & Control)"| WebClient
 ```
 
-<!-- <p align="center">
-  <img src="packages/web/public/data-flow-diagram.png" width="850" alt="LMESH Data Flow Architecture Diagram" style="border-radius: 8px;" />
-</p> -->
+### Session Lifecycle & Protocol Flow
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor Host as Host (Terminal & CLI)
+    participant Relay as LMESH Relay Server
+    participant Redis as Redis Pub/Sub
+    actor Viewer as Collaborator (Web)
+
+    Note over Host,Relay: 1. Session Initialization
+    Host->>Relay: session_create (JWT auth, password, read-only flag)
+    Relay-->>Host: session_created (session ID & secure viewer URL)
+
+    Note over Relay,Viewer: 2. Collaborator Handshake
+    Viewer->>Relay: session_join (session ID, optional password)
+    Relay-->>Viewer: session_joined + session_update (initial viewport state)
+
+    Note over Host,Viewer: 3. Real-Time Terminal Streaming & Fanout
+    Host->>Relay: terminal_data (PTY stdout escape sequences)
+    Relay->>Redis: Publish frame (lmesh:session:id)
+    Redis-->>Relay: Multi-node cluster fanout
+    Relay-->>Viewer: terminal_data (rendered via xterm.js WebGL)
+
+    Note over Host,Viewer: 4. Token-Gated Control Delegation
+    Viewer->>Relay: control_request
+    Relay->>Host: control_request (CLI prompts host: y/n)
+    Host->>Relay: control_grant
+    Relay-->>Viewer: session_update (write token granted)
+    Viewer->>Relay: terminal_data (collaborator stdin)
+    Relay->>Host: terminal_data (injected into host virtual PTY)
+    Host->>Relay: terminal_data (command output stream)
+    Relay-->>Viewer: terminal_data (terminal canvas update)
+
+    Note over Host,Viewer: 5. Host Sovereignty & Hardware Preemption
+    Host->>Relay: control_revoke (physical keypress detected on host)
+    Relay-->>Viewer: session_update (control reclaimed by host)
+
+    Note over Host,Viewer: 6. Graceful Teardown
+    Host->>Relay: session_terminate (hotkey Ctrl+])
+    Relay-->>Viewer: session_terminated (session closed)
+```
 
 ---
 
