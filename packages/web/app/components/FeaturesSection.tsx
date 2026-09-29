@@ -46,12 +46,12 @@ export function FeaturesSection() {
                   {feature.description}
                 </p>
               </div>
-              <div className="flex items-center gap-2.5 pt-2">
+              {/* <div className="flex items-center gap-2.5 pt-2">
                 <div className="w-7 h-7 rounded-md bg-(--card-bg) border border-(--border-color) flex items-center justify-center text-(--foreground) shrink-0">
                   <Icon className="w-3.5 h-3.5" />
                 </div>
                 <span className="text-[11px] font-mono text-(--text-subtle)">Feature 0{idx + 1}</span>
-              </div>
+              </div> */}
             </div>
           );
         })}

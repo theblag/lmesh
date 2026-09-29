@@ -11,6 +11,7 @@ import {
   Cross2Icon
 } from "@radix-ui/react-icons";
 import { Footer } from "./Footer";
+import { NpmIcon } from "./NpmIcon";
 
 export function DocsLayoutClient({
   children,
@@ -124,6 +125,16 @@ export function DocsLayoutClient({
             >
               <GitHubLogoIcon className="w-3.5 h-3.5" />
               <span className="hidden sm:inline">GitHub</span>
+            </a>
+            <a
+              href="https://www.npmjs.com/package/lmesh-cli"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-(--text-muted) hover:text-(--foreground) transition-colors flex items-center gap-1.5"
+              title="View lmesh-cli on npm"
+            >
+              <NpmIcon className="w-5 h-5" />
+              <span className="hidden sm:inline">v1.0.1</span>
             </a>
             <ThemeToggle />
           </nav>

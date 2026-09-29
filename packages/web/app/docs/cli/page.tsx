@@ -8,6 +8,7 @@ import {
   ArrowLeftIcon,
   ArrowRightIcon
 } from "@radix-ui/react-icons";
+import { NpmIcon } from "../../components/NpmIcon";
 
 export default function CliDocsPage() {
   const [copiedCmd, setCopiedCmd] = useState<string | null>(null);
@@ -55,6 +56,30 @@ export default function CliDocsPage() {
           <p className="text-sm sm:text-base text-(--text-muted) max-w-2xl leading-relaxed">
             The LMESH CLI connects your local operating system shell (POSIX PTY / ConPTY) to the relay server via secure WebSockets. Below is the complete syntax, flag specifications, and practical usage examples for all subcommands.
           </p>
+
+          {/* NPM Package Registry Callout */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 mt-4 rounded-lg border border-(--border-color) bg-(--card-bg) text-xs">
+            <div className="flex items-center gap-2.5">
+              <NpmIcon className="w-7 h-7 shrink-0" />
+              <span className="text-(--text-muted)">
+                Package: <code className="font-mono text-(--foreground) font-semibold">lmesh-cli</code>
+              </span>
+            </div>
+            <div className="flex items-center gap-3">
+              <code className="font-mono text-[11px] text-(--text-muted) bg-black px-2 py-1 rounded-sm border border-white/12">
+                npm i -g lmesh-cli
+              </code>
+              <a
+                href="https://www.npmjs.com/package/lmesh-cli"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-mono text-xs font-medium text-blue-500 hover:text-blue-400 transition-colors flex items-center gap-1"
+              >
+                <span>View on npm</span>
+                <ArrowRightIcon className="w-3 h-3" />
+              </a>
+            </div>
+          </div>
         </div>
 
         {/* Global Syntax */}
@@ -63,13 +88,13 @@ export default function CliDocsPage() {
             Command Syntax
           </h2>
           <p className="text-sm text-(--text-muted) leading-relaxed">
-            All LMESH commands follow standard POSIX command-line formatting:
+            All LMESH commands can be invoked using either <code className="font-mono text-(--foreground) bg-(--card-bg) px-1 py-0.5 rounded border border-(--border-color)">lmesh</code> (when installed globally) or <code className="font-mono text-(--foreground) bg-(--card-bg) px-1 py-0.5 rounded border border-(--border-color)">npx lmesh-cli</code>:
           </p>
-          <div className="rounded-xl border border-[#232630] bg-[#0c0d12] overflow-hidden text-[#ededed] selection:bg-white/25 selection:text-white">
-            <div className="flex items-center justify-between border-b border-[#1f212a] px-4 py-2.5 bg-[#13151c] text-xs font-mono select-none">
+          <div className="rounded-sm border border-white/12 bg-black overflow-hidden text-[#ededed] selection:bg-white/25 selection:text-white">
+            <div className="flex items-center justify-between border-b border-[#1f212a] px-4 py-2.5 bg-black/90 text-xs font-mono select-none">
               <span className="text-[#8e93a0] text-[11px] font-medium">syntax</span>
             </div>
-            <div className="p-4 font-mono text-xs overflow-x-auto text-[#f1f1f1] flex items-center gap-2.5 bg-[#0c0d12]">
+            <div className="p-4 font-mono text-xs overflow-x-auto text-[#f1f1f1] flex items-center gap-2.5 bg-black">
               <span className="text-[#555a68] select-none font-semibold">$</span>
               <code className="text-[#f1f1f1] font-mono tracking-tight">lmesh &lt;command&gt; [options]</code>
             </div>
@@ -110,8 +135,8 @@ export default function CliDocsPage() {
             Initiates GitHub OAuth Device Authorization. The CLI prints a one-time 8-character user code and automatically opens GitHub's verification page. Once authorized, an encrypted JWT is saved to <code className="font-mono text-(--foreground) bg-(--card-bg) px-1.5 py-0.5 rounded border border-(--border-color)">~/.lmesh/auth.json</code>.
           </p>
 
-          <div className="rounded-xl border border-[#232630] bg-[#0c0d12] overflow-hidden text-[#ededed] selection:bg-white/25 selection:text-white">
-            <div className="flex items-center justify-between border-b border-[#1f212a] px-4 py-2.5 bg-[#13151c] text-xs font-mono select-none">
+          <div className="rounded-sm border border-white/12 bg-black overflow-hidden text-[#ededed] selection:bg-white/25 selection:text-white">
+            <div className="flex items-center justify-between border-b border-[#1f212a] px-4 py-2.5 bg-black/90 text-xs font-mono select-none">
               <span className="text-[#8e93a0] text-[11px] font-medium">bash</span>
               <button
                 onClick={() => handleCopy("lmesh login", "cmd-login")}
@@ -130,7 +155,7 @@ export default function CliDocsPage() {
                 )}
               </button>
             </div>
-            <div className="p-4 font-mono text-xs overflow-x-auto text-[#f1f1f1] flex items-center gap-2.5 bg-[#0c0d12]">
+            <div className="p-4 font-mono text-xs overflow-x-auto text-[#f1f1f1] flex items-center gap-2.5 bg-black">
               <span className="text-[#555a68] select-none font-semibold">$</span>
               <code className="text-[#f1f1f1] font-mono tracking-tight">lmesh login</code>
             </div>
@@ -151,8 +176,8 @@ export default function CliDocsPage() {
             Spawns your operating system's native pseudo-terminal (POSIX PTY on macOS/Linux, ConPTY on Windows) and initiates a real-time WebSocket session. Collaborators join via the generated browser URL.
           </p>
 
-          <div className="rounded-xl border border-[#232630] bg-[#0c0d12] overflow-hidden text-[#ededed] selection:bg-white/25 selection:text-white">
-            <div className="flex items-center justify-between border-b border-[#1f212a] px-4 py-2.5 bg-[#13151c] text-xs font-mono select-none">
+          <div className="rounded-sm border border-white/12 bg-black overflow-hidden text-[#ededed] selection:bg-white/25 selection:text-white">
+            <div className="flex items-center justify-between border-b border-[#1f212a] px-4 py-2.5 bg-black/90 text-xs font-mono select-none">
               <span className="text-[#8e93a0] text-[11px] font-medium">bash</span>
               <button
                 onClick={() => handleCopy("lmesh share [options]", "cmd-share")}
@@ -171,7 +196,7 @@ export default function CliDocsPage() {
                 )}
               </button>
             </div>
-            <div className="p-4 font-mono text-xs overflow-x-auto text-[#f1f1f1] flex items-center gap-2.5 bg-[#0c0d12]">
+            <div className="p-4 font-mono text-xs overflow-x-auto text-[#f1f1f1] flex items-center gap-2.5 bg-black">
               <span className="text-[#555a68] select-none font-semibold">$</span>
               <code className="text-[#f1f1f1] font-mono tracking-tight">lmesh share [options]</code>
             </div>
@@ -188,7 +213,7 @@ export default function CliDocsPage() {
               <div className="flex items-center justify-between text-xs font-mono">
                 <span className="font-semibold text-(--foreground)">1. Default Local Session</span>
               </div>
-              <div className="px-3.5 py-2.5 rounded-lg border border-[#232630] bg-[#0c0d12] font-mono text-xs text-[#f1f1f1] flex items-center justify-between gap-2 selection:bg-white/25 selection:text-white">
+              <div className="px-3.5 py-2.5 rounded-sm border border-white/12 bg-black font-mono text-xs text-[#f1f1f1] flex items-center justify-between gap-2 selection:bg-white/25 selection:text-white">
                 <div className="flex items-center gap-2 overflow-x-auto">
                   <span className="text-[#555a68] select-none font-semibold">$</span>
                   <code className="text-[#f1f1f1] font-mono">lmesh share</code>
@@ -221,7 +246,7 @@ export default function CliDocsPage() {
               <div className="flex items-center justify-between text-xs font-mono">
                 <span className="font-semibold text-(--foreground)">2. Password-Protected Session</span>
               </div>
-              <div className="px-3.5 py-2.5 rounded-lg border border-[#232630] bg-[#0c0d12] font-mono text-xs text-[#f1f1f1] flex items-center justify-between gap-2 selection:bg-white/25 selection:text-white">
+              <div className="px-3.5 py-2.5 rounded-sm border border-white/12 bg-black font-mono text-xs text-[#f1f1f1] flex items-center justify-between gap-2 selection:bg-white/25 selection:text-white">
                 <div className="flex items-center gap-2 overflow-x-auto">
                   <span className="text-[#555a68] select-none font-semibold">$</span>
                   <code className="text-[#f1f1f1] font-mono">lmesh share --password mySecretPass123</code>
@@ -254,7 +279,7 @@ export default function CliDocsPage() {
               <div className="flex items-center justify-between text-xs font-mono">
                 <span className="font-semibold text-(--foreground)">3. Read-Only Broadcast Mode</span>
               </div>
-              <div className="px-3.5 py-2.5 rounded-lg border border-[#232630] bg-[#0c0d12] font-mono text-xs text-[#f1f1f1] flex items-center justify-between gap-2 selection:bg-white/25 selection:text-white">
+              <div className="px-3.5 py-2.5 rounded-sm border border-white/12 bg-black font-mono text-xs text-[#f1f1f1] flex items-center justify-between gap-2 selection:bg-white/25 selection:text-white">
                 <div className="flex items-center gap-2 overflow-x-auto">
                   <span className="text-[#555a68] select-none font-semibold">$</span>
                   <code className="text-[#f1f1f1] font-mono">lmesh share --readonly</code>
@@ -287,7 +312,7 @@ export default function CliDocsPage() {
               <div className="flex items-center justify-between text-xs font-mono">
                 <span className="font-semibold text-(--foreground)">4. Cloud Relay Connection</span>
               </div>
-              <div className="px-3.5 py-2.5 rounded-lg border border-[#232630] bg-[#0c0d12] font-mono text-xs text-[#f1f1f1] flex items-center justify-between gap-2 selection:bg-white/25 selection:text-white">
+              <div className="px-3.5 py-2.5 rounded-sm border border-white/12 bg-black font-mono text-xs text-[#f1f1f1] flex items-center justify-between gap-2 selection:bg-white/25 selection:text-white">
                 <div className="flex items-center gap-2 overflow-x-auto">
                   <span className="text-[#555a68] select-none font-semibold">$</span>
                   <code className="text-[#f1f1f1] font-mono">lmesh share --url wss://relay.yourdomain.com</code>
@@ -331,8 +356,8 @@ export default function CliDocsPage() {
             Inspects your local credentials configuration and outputs the active GitHub username, user ID, and auth status.
           </p>
 
-          <div className="rounded-xl border border-[#232630] bg-[#0c0d12] overflow-hidden text-[#ededed] selection:bg-white/25 selection:text-white">
-            <div className="flex items-center justify-between border-b border-[#1f212a] px-4 py-2.5 bg-[#13151c] text-xs font-mono select-none">
+          <div className="rounded-sm border border-white/12 bg-black overflow-hidden text-[#ededed] selection:bg-white/25 selection:text-white">
+            <div className="flex items-center justify-between border-b border-[#1f212a] px-4 py-2.5 bg-black/90 text-xs font-mono select-none">
               <span className="text-[#8e93a0] text-[11px] font-medium">bash</span>
               <button
                 onClick={() => handleCopy("lmesh whoami", "cmd-whoami")}
@@ -351,7 +376,7 @@ export default function CliDocsPage() {
                 )}
               </button>
             </div>
-            <div className="p-4 font-mono text-xs overflow-x-auto text-[#f1f1f1] flex items-center gap-2.5 bg-[#0c0d12]">
+            <div className="p-4 font-mono text-xs overflow-x-auto text-[#f1f1f1] flex items-center gap-2.5 bg-black">
               <span className="text-[#555a68] select-none font-semibold">$</span>
               <code className="text-[#f1f1f1] font-mono tracking-tight">lmesh whoami</code>
             </div>
@@ -372,8 +397,8 @@ export default function CliDocsPage() {
             Safely removes the stored JWT token and user profile from <code className="font-mono text-(--foreground) bg-(--card-bg) px-1.5 py-0.5 rounded border border-(--border-color)">~/.lmesh/auth.json</code>.
           </p>
 
-          <div className="rounded-xl border border-[#232630] bg-[#0c0d12] overflow-hidden text-[#ededed] selection:bg-white/25 selection:text-white">
-            <div className="flex items-center justify-between border-b border-[#1f212a] px-4 py-2.5 bg-[#13151c] text-xs font-mono select-none">
+          <div className="rounded-sm border border-white/12 bg-black overflow-hidden text-[#ededed] selection:bg-white/25 selection:text-white">
+            <div className="flex items-center justify-between border-b border-[#1f212a] px-4 py-2.5 bg-black/90 text-xs font-mono select-none">
               <span className="text-[#8e93a0] text-[11px] font-medium">bash</span>
               <button
                 onClick={() => handleCopy("lmesh logout", "cmd-logout")}
@@ -392,7 +417,7 @@ export default function CliDocsPage() {
                 )}
               </button>
             </div>
-            <div className="p-4 font-mono text-xs overflow-x-auto text-[#f1f1f1] flex items-center gap-2.5 bg-[#0c0d12]">
+            <div className="p-4 font-mono text-xs overflow-x-auto text-[#f1f1f1] flex items-center gap-2.5 bg-black">
               <span className="text-[#555a68] select-none font-semibold">$</span>
               <code className="text-[#f1f1f1] font-mono tracking-tight">lmesh logout</code>
             </div>
@@ -480,7 +505,7 @@ export default function CliDocsPage() {
         <div className="pt-12 border-t border-(--border-color) flex flex-col sm:flex-row items-center justify-between gap-4">
           <Link
             href="/docs"
-            className="w-full sm:w-auto px-4 py-2.5 rounded-lg border border-(--border-color) bg-(--card-bg) hover:bg-(--card-hover) text-(--foreground) font-semibold text-xs flex items-center justify-center gap-2 transition-colors shadow-xs"
+            className="w-full sm:w-auto px-4 py-2.5 rounded-lg border border-(--border-color) bg-(--card-bg) hover:bg-(--card-hover) text-(--foreground) font-semibold text-xs flex items-center justify-center gap-2 transition-colors"
           >
             <ArrowLeftIcon className="w-4 h-4" />
             <span>Previous: Quick Start</span>
@@ -488,7 +513,7 @@ export default function CliDocsPage() {
 
           <Link
             href="/docs/controls"
-            className="w-full sm:w-auto px-5 py-2.5 rounded-lg bg-(--btn-bg) text-(--btn-fg) font-semibold text-xs flex items-center justify-center gap-2 hover:opacity-90 transition-opacity shadow-xs"
+            className="w-full sm:w-auto px-5 py-2.5 rounded-lg bg-(--btn-bg) text-(--btn-fg) font-semibold text-xs flex items-center justify-center gap-2 hover:opacity-90 transition-opacity"
           >
             <span>Next: Controls & Hotkeys</span>
             <ArrowRightIcon className="w-4 h-4" />

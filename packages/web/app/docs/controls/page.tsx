@@ -156,8 +156,8 @@ export default function ControlsDocsPage() {
           </div>
 
           {/* Terminal Snippet Box */}
-          <div className="rounded-xl border border-[#232630] bg-[#0c0d12] overflow-hidden text-[#ededed] selection:bg-white/25 selection:text-white">
-            <div className="flex items-center justify-between border-b border-[#1f212a] px-4 py-2.5 bg-[#13151c] text-xs font-mono select-none">
+          <div className="rounded-sm border border-white/12 bg-black overflow-hidden text-[#ededed] selection:bg-white/25 selection:text-white">
+            <div className="flex items-center justify-between border-b border-[#1f212a] px-4 py-2.5 bg-black/90 text-xs font-mono select-none">
               <span className="text-[#8e93a0] text-[11px] font-medium">terminal preview</span>
               <button
                 onClick={() => handleCopy("export DATABASE_URL=postgres://user:[REDACTED]@db.internal:5432/prod", "cmd-safety")}
@@ -176,7 +176,7 @@ export default function ControlsDocsPage() {
                 )}
               </button>
             </div>
-            <div className="p-4 font-mono text-xs overflow-x-auto text-[#f1f1f1] space-y-1 bg-[#0c0d12]">
+            <div className="p-4 font-mono text-xs overflow-x-auto text-[#f1f1f1] space-y-1 bg-black">
               <div className="text-[#8e93a0]">
                 <span className="text-[#555a68] select-none font-semibold mr-2">$</span>
                 export DATABASE_URL=postgres://user:[REDACTED]@db.internal:5432/prod
@@ -295,7 +295,7 @@ export default function ControlsDocsPage() {
         <div className="pt-12 border-t border-(--border-color) flex flex-col sm:flex-row items-center justify-between gap-4">
           <Link
             href="/docs/cli"
-            className="w-full sm:w-auto px-4 py-2.5 rounded-lg border border-(--border-color) bg-(--card-bg) hover:bg-(--card-hover) text-(--foreground) font-semibold text-xs flex items-center justify-center gap-2 transition-colors shadow-xs"
+            className="w-full sm:w-auto px-4 py-2.5 rounded-lg border border-(--border-color) bg-(--card-bg) hover:bg-(--card-hover) text-(--foreground) font-semibold text-xs flex items-center justify-center gap-2 transition-colors"
           >
             <ArrowLeftIcon className="w-4 h-4" />
             <span>Previous: CLI Reference</span>
@@ -303,7 +303,7 @@ export default function ControlsDocsPage() {
 
           <Link
             href="/docs/architecture"
-            className="w-full sm:w-auto px-5 py-2.5 rounded-lg bg-(--btn-bg) text-(--btn-fg) font-semibold text-xs flex items-center justify-center gap-2 hover:opacity-90 transition-opacity shadow-xs"
+            className="w-full sm:w-auto px-5 py-2.5 rounded-lg bg-(--btn-bg) text-(--btn-fg) font-semibold text-xs flex items-center justify-center gap-2 hover:opacity-90 transition-opacity"
           >
             <span>Next: Architecture</span>
             <ArrowRightIcon className="w-4 h-4" />

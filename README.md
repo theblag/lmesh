@@ -10,7 +10,9 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License: MIT" />
+  <a href="https://www.npmjs.com/package/lmesh-cli"><img src="https://img.shields.io/npm/v/lmesh-cli.svg" alt="npm version" /></a>
+  <a href="https://www.npmjs.com/package/lmesh-cli"><img src="https://img.shields.io/npm/dm/lmesh-cli.svg" alt="npm downloads" /></a>
+  <a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License: MIT" /></a>
   <img src="https://img.shields.io/badge/TypeScript-5.0-3178C6.svg?logo=typescript&logoColor=white" alt="TypeScript" />
   <img src="https://img.shields.io/badge/Next.js-16-black.svg?logo=next.js&logoColor=white" alt="Next.js" />
   <img src="https://img.shields.io/badge/node--pty-Virtual_Terminal-green.svg" alt="node-pty" />
@@ -19,11 +21,11 @@
 
 <p align="center">
   <a href="#overview">Overview</a> •
+  <a href="#installation">Installation</a> •
+  <a href="#cli-usage">CLI Usage</a> •
   <a href="#key-capabilities">Key Capabilities</a> •
   <a href="#system-architecture">System Architecture</a> •
-  <a href="#monorepo-structure">Monorepo Structure</a> •
-  <a href="#quick-start">Quick Start</a> •
-  <a href="#cli-usage">CLI Usage</a> •
+  <a href="#self-hosting--local-development">Self-Hosting</a> •
   <a href="#security-model">Security Model</a>
 </p>
 
@@ -46,6 +48,102 @@ LMESH ensures strict host sovereignty through a **single-token write mutex**: re
 - **Private Mode (Ctrl+S)**: In-session hotkey that dynamically redacts sensitive environment variables, passwords, and API credentials from the persistent audit trail.
 - **Horizontal Relay Scalability**: Redis Pub/Sub cluster layer handles cross-instance broadcast and multi-node relay synchronization with instance deduplication.
 - **GitHub Device Authorization**: Secure login via GitHub OAuth Device Flow on the CLI and standard OAuth 2.0 on the web interface.
+
+---
+
+## Installation
+
+Install the LMESH CLI globally from the [npm registry](https://www.npmjs.com/package/lmesh-cli):
+
+```bash
+# Global installation via npm
+npm install -g lmesh-cli
+
+# Or using pnpm / yarn
+pnpm add -g lmesh-cli
+yarn global add lmesh-cli
+```
+
+> **Note**: Global installation exposes both `lmesh` and `lmesh-cli` commands in your system PATH.
+
+### Instant Execution (`npx`)
+
+You can also run commands on-the-fly without global installation:
+
+```bash
+# Authenticate via GitHub
+npx lmesh-cli login
+
+# Start sharing your terminal
+npx lmesh-cli share
+```
+
+---
+
+## CLI Usage
+
+The CLI automatically connects to the hosted LMESH relay network (`wss://lmesh.onrender.com`) and pairs with the web viewer at [lmesh.vercel.app](https://lmesh.vercel.app). Zero server configuration or inbound port forwarding is required.
+
+### 1. Authenticate with GitHub
+
+```bash
+lmesh login
+```
+
+The CLI displays an 8-character verification code and opens GitHub Device Authorization. Once approved, verify your profile:
+
+```bash
+lmesh whoami
+```
+
+### 2. Share Your Shell
+
+```bash
+lmesh share
+```
+
+Spawns your local shell (`powershell.exe` / `bash` / `zsh`) inside a virtual pseudo-terminal (PTY) and streams it live over secure WebSockets:
+
+```text
+Authenticated as @yourusername
+Connecting to relay server at wss://lmesh.onrender.com...
+Session created successfully!
+Host: @yourusername
+Share this link with collaborators:
+https://lmesh.vercel.app/x7k2m9p
+(Type 'exit' or press Ctrl+] to end session • Ctrl+S for Private Mode)
+```
+
+Collaborators open the link in any modern web browser to view your terminal in 60 FPS WebGL or request keyboard write control.
+
+### 3. Command Flags & Options
+
+```bash
+# Share with password protection
+lmesh share -w mySecretPassword
+
+# Force read-only mode (collaborators cannot request control)
+lmesh share --readonly
+
+# Connect to a custom self-hosted relay
+lmesh share -u ws://localhost:3001
+```
+
+| Flag | Shorthand | Description |
+| :--- | :--- | :--- |
+| `--password <string>` | `-w` | Protects session access behind a password |
+| `--readonly` | `-r` | Forces view-only mode (disables control requests) |
+| `--url <wss_url>` | `-u` | Specifies custom relay WebSocket endpoint |
+| `--help` | `-h` | Displays command options and flags |
+
+### 4. In-Session Hotkeys
+
+| Hotkey | Action | Description |
+| :--- | :--- | :--- |
+| `Ctrl+]` or `exit` | **Terminate Session** | Instantly closes the session and disconnects all collaborators. |
+| `Ctrl+S` | **Private Mode** | Toggles audit-log redaction for passwords, API tokens, and secrets. |
+| `y` / `n` | **Control Approval** | Responds to incoming remote write-token handover requests. |
+| *Any physical key* | **Host Preemption** | Immediately revokes collaborator input and restores exclusive host control. |
 
 ---
 
@@ -170,13 +268,15 @@ lmesh/
 
 ---
 
-## Quick Start
+## Self-Hosting & Local Development
+
+For developers contributing to LMESH or self-hosting the complete relay infrastructure:
 
 ### Prerequisites
 
 - **Node.js**: `v20.x` or higher
 - **npm**: `v10.x` or higher
-- **PostgreSQL**: PostgreSQL database (e.g. Neon serverless)
+- **PostgreSQL**: PostgreSQL database (e.g. Neon serverless or local)
 - **Redis**: Redis instance (required for multi-node clustering)
 - **GitHub OAuth App**: Client ID & Client Secret (Device Flow + Web OAuth)
 
@@ -222,7 +322,7 @@ npm run dev
 
 The web dashboard is now accessible at `http://localhost:3000`.
 
-### 4. Build & Link the CLI
+### 4. Build & Link the CLI Locally
 
 In a separate terminal:
 ```bash
@@ -231,52 +331,6 @@ npm install
 npm run build
 npm link
 ```
-
----
-
-## CLI Usage
-
-### 1. Authenticate with GitHub
-
-Run the device authorization login flow:
-```bash
-lmesh login
-```
-Follow the prompt to authorize on GitHub. Verify your profile:
-```bash
-lmesh whoami
-```
-
-### 2. Share Your Shell
-
-Start sharing your terminal session:
-```bash
-lmesh share
-```
-
-Share with password protection:
-```bash
-lmesh share -w mySecretPassword
-```
-
-Share in read-only mode (collaborators cannot request control):
-```bash
-lmesh share --readonly
-```
-
-Connect to a remote production relay:
-```bash
-lmesh share -u wss://relay.yourdomain.com
-```
-
-### 3. In-Session Hotkeys
-
-| Hotkey | Action | Description |
-| :--- | :--- | :--- |
-| `Ctrl+]` or `exit` | **Terminate Session** | Instantly closes the session and disconnects all collaborators. |
-| `Ctrl+S` | **Private Mode** | Toggles audit-log redaction for passwords, API tokens, and secrets. |
-| `y` / `n` | **Control Approval** | Responds to incoming remote write-token handover requests. |
-| *Any physical key* | **Host Preemption** | Immediately revokes collaborator input and restores exclusive host control. |
 
 ---
 

@@ -18,6 +18,7 @@ import {
   PersonIcon
 } from "@radix-ui/react-icons";
 import { SERVER_URL } from "./lib/config";
+import { NpmIcon } from "./components/NpmIcon";
 
 interface UserProfile {
   id?: string;
@@ -93,7 +94,7 @@ export default function Home() {
   };
 
   const handleCopy = () => {
-    navigator.clipboard.writeText("npm install -g lmesh");
+    navigator.clipboard.writeText("npm install -g lmesh-cli");
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
@@ -131,6 +132,16 @@ export default function Home() {
             >
               <GitHubLogoIcon className="w-3.5 h-3.5" />
               GitHub
+            </a>
+            <a
+              href="https://www.npmjs.com/package/lmesh-cli"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-xs text-(--text-muted) hover:text-(--foreground) transition-colors font-sans tracking-tight flex items-center gap-1.5"
+              title="View lmesh-cli on npm"
+            >
+              <NpmIcon className="w-5 h-5" />
+              <span className="hidden sm:inline">v1.0.1</span>
             </a>
             {userProfile ? (
               <Link
@@ -173,9 +184,21 @@ export default function Home() {
 
             {/* Quick copy command */}
             <div className="flex flex-col gap-3">
-              <span className="text-[10px] font-mono uppercase tracking-wider text-(--text-subtle)">Install the tool</span>
+              <div className="flex items-center justify-between max-w-sm">
+                <span className="text-[10px] font-mono uppercase tracking-wider text-(--text-subtle)">Install the CLI</span>
+                <a
+                  href="https://www.npmjs.com/package/lmesh-cli"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-[10px] font-mono text-(--text-subtle) hover:text-(--foreground) transition-colors flex items-center gap-1.5"
+                  title="View lmesh-cli on npm"
+                >
+                  <NpmIcon className="w-4 h-4" />
+                  <span>v1.0.1</span>
+                </a>
+              </div>
               <div className="flex items-center justify-between bg-(--card-bg) border border-(--border-color) rounded-md px-4 py-3 font-mono text-xs max-w-sm">
-                <span className="text-(--foreground) font-medium">npm install -g lmesh</span>
+                <span className="text-(--foreground) font-medium">npm install -g lmesh-cli</span>
                 <button
                   onClick={handleCopy}
                   className="text-(--text-subtle) hover:text-(--foreground) transition-colors cursor-pointer"
@@ -184,7 +207,10 @@ export default function Home() {
                   {copied ? <CheckIcon className="w-4 h-4 text-(--foreground)" /> : <CopyIcon className="w-4 h-4" />}
                 </button>
               </div>
-              <span className="text-[10px] font-mono text-(--text-subtle)">Then run: <code className="text-(--text-muted)">lmesh share</code></span>
+              <div className="flex items-center justify-between max-w-sm text-[10px] font-mono text-(--text-subtle)">
+                <span>Then run: <code className="text-(--text-muted)">lmesh share</code></span>
+                <span>or <code className="text-(--text-muted)">npx lmesh-cli</code></span>
+              </div>
             </div>
 
             {/* Join Session Box */}

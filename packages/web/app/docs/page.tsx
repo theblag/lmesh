@@ -10,10 +10,11 @@ import {
   LockClosedIcon,
   InfoCircledIcon
 } from "@radix-ui/react-icons";
+import { NpmIcon } from "../components/NpmIcon";
 
 export default function QuickstartDocsPage() {
   const [copiedCmd, setCopiedCmd] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<"npm" | "pnpm" | "yarn">("npm");
+  const [activeTab, setActiveTab] = useState<"npm" | "pnpm" | "yarn" | "npx">("npm");
 
   const handleCopy = (text: string, id: string) => {
     navigator.clipboard.writeText(text);
@@ -110,12 +111,31 @@ export default function QuickstartDocsPage() {
             </h2>
           </div>
           <p className="text-sm text-(--text-muted) leading-relaxed">
-            Install the LMESH CLI globally using your package manager of choice:
+            Install the CLI globally from the npm registry using your package manager of choice, or run directly via <code className="font-mono text-(--foreground) bg-(--card-bg) px-1.5 py-0.5 rounded border border-(--border-color)">npx</code>:
           </p>
 
+          {/* NPM Registry Badge & Link Box */}
+          <div className="flex items-center justify-between p-3.5 rounded-lg border border-(--border-color) bg-(--card-bg) text-xs">
+            <div className="flex items-center gap-2.5">
+              <NpmIcon className="w-7 h-7 shrink-0" />
+              <span className="text-(--text-muted)">
+                Package: <code className="font-mono text-(--foreground) font-semibold">lmesh-cli</code>
+              </span>
+            </div>
+            <a
+              href="https://www.npmjs.com/package/lmesh-cli"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-mono text-xs font-medium text-blue-500 hover:text-blue-400 transition-colors flex items-center gap-1"
+            >
+              <span>npmjs.com/package/lmesh-cli</span>
+              <ArrowRightIcon className="w-3 h-3" />
+            </a>
+          </div>
+
           {/* Terminal Snippet Box with Tabs */}
-          <div className="rounded-xl border border-[#232630] bg-[#0c0d12] overflow-hidden text-[#ededed] selection:bg-white/25 selection:text-white">
-            <div className="flex items-center justify-between border-b border-[#1f212a] px-4 py-2.5 bg-[#13151c] text-xs font-mono select-none">
+          <div className="rounded-sm border border-white/12 bg-black overflow-hidden text-[#ededed] selection:bg-white/25 selection:text-white">
+            <div className="flex items-center justify-between border-b border-[#1f212a] px-4 py-2.5 bg-black/90 text-xs font-mono select-none">
               <div className="flex items-center gap-1.5">
                 <button
                   onClick={() => setActiveTab("npm")}
@@ -126,6 +146,16 @@ export default function QuickstartDocsPage() {
                   }`}
                 >
                   npm
+                </button>
+                <button
+                  onClick={() => setActiveTab("npx")}
+                  className={`px-2.5 py-0.5 rounded text-[11px] font-mono transition-colors cursor-pointer ${
+                    activeTab === "npx"
+                      ? "bg-[#2c3140] text-white font-semibold"
+                      : "text-[#7f8494] hover:text-[#d1d5db]"
+                  }`}
+                >
+                  npx (instant)
                 </button>
                 <button
                   onClick={() => setActiveTab("pnpm")}
@@ -152,10 +182,12 @@ export default function QuickstartDocsPage() {
                 onClick={() =>
                   handleCopy(
                     activeTab === "npm"
-                      ? "npm install -g lmesh"
+                      ? "npm install -g lmesh-cli"
+                      : activeTab === "npx"
+                      ? "npx lmesh-cli share"
                       : activeTab === "pnpm"
-                      ? "pnpm add -g lmesh"
-                      : "yarn global add lmesh",
+                      ? "pnpm add -g lmesh-cli"
+                      : "yarn global add lmesh-cli",
                     "install"
                   )
                 }
@@ -174,18 +206,19 @@ export default function QuickstartDocsPage() {
                 )}
               </button>
             </div>
-            <div className="p-4 font-mono text-xs overflow-x-auto text-[#f1f1f1] flex items-center gap-2.5 bg-[#0c0d12]">
+            <div className="p-4 font-mono text-xs overflow-x-auto text-[#f1f1f1] flex items-center gap-2.5 bg-black">
               <span className="text-[#555a68] select-none font-semibold">$</span>
               <code className="text-[#f1f1f1] font-mono tracking-tight">
-                {activeTab === "npm" && "npm install -g lmesh"}
-                {activeTab === "pnpm" && "pnpm add -g lmesh"}
-                {activeTab === "yarn" && "yarn global add lmesh"}
+                {activeTab === "npm" && "npm install -g lmesh-cli"}
+                {activeTab === "npx" && "npx lmesh-cli share"}
+                {activeTab === "pnpm" && "pnpm add -g lmesh-cli"}
+                {activeTab === "yarn" && "yarn global add lmesh-cli"}
               </code>
             </div>
           </div>
 
           <p className="text-xs text-(--text-subtle) pt-1">
-            Verify the installation by running <code className="font-mono text-(--foreground) bg-(--card-bg) px-1.5 py-0.5 rounded border border-(--border-color)">lmesh --version</code> in your terminal.
+            Installing <code className="font-mono text-(--foreground) bg-(--card-bg) px-1.5 py-0.5 rounded border border-(--border-color)">lmesh-cli</code> exposes both <code className="font-mono text-(--foreground) bg-(--card-bg) px-1.5 py-0.5 rounded border border-(--border-color)">lmesh</code> and <code className="font-mono text-(--foreground) bg-(--card-bg) px-1.5 py-0.5 rounded border border-(--border-color)">lmesh-cli</code> binary commands globally in your PATH. Verify installation with <code className="font-mono text-(--foreground) bg-(--card-bg) px-1.5 py-0.5 rounded border border-(--border-color)">lmesh --version</code>.
           </p>
         </section>
 
@@ -204,8 +237,8 @@ export default function QuickstartDocsPage() {
           </p>
 
           {/* Command Code Box */}
-          <div className="rounded-xl border border-[#232630] bg-[#0c0d12] overflow-hidden text-[#ededed] selection:bg-white/25 selection:text-white">
-            <div className="flex items-center justify-between border-b border-[#1f212a] px-4 py-2.5 bg-[#13151c] text-xs font-mono select-none">
+          <div className="rounded-sm border border-white/12 bg-black overflow-hidden text-[#ededed] selection:bg-white/25 selection:text-white">
+            <div className="flex items-center justify-between border-b border-[#1f212a] px-4 py-2.5 bg-black/90 text-xs font-mono select-none">
               <span className="text-[#8e93a0] text-[11px] font-medium">bash</span>
               <button
                 onClick={() => handleCopy("lmesh login", "login")}
@@ -224,7 +257,7 @@ export default function QuickstartDocsPage() {
                 )}
               </button>
             </div>
-            <div className="p-4 font-mono text-xs overflow-x-auto text-[#f1f1f1] flex items-center gap-2.5 bg-[#0c0d12]">
+            <div className="p-4 font-mono text-xs overflow-x-auto text-[#f1f1f1] flex items-center gap-2.5 bg-black">
               <span className="text-[#555a68] select-none font-semibold">$</span>
               <code className="text-[#f1f1f1] font-mono tracking-tight">lmesh login</code>
             </div>
@@ -259,8 +292,8 @@ export default function QuickstartDocsPage() {
           </p>
 
           {/* Command Code Box */}
-          <div className="rounded-xl border border-[#232630] bg-[#0c0d12] overflow-hidden text-[#ededed] selection:bg-white/25 selection:text-white">
-            <div className="flex items-center justify-between border-b border-[#1f212a] px-4 py-2.5 bg-[#13151c] text-xs font-mono select-none">
+          <div className="rounded-sm border border-white/12 bg-black overflow-hidden text-[#ededed] selection:bg-white/25 selection:text-white">
+            <div className="flex items-center justify-between border-b border-[#1f212a] px-4 py-2.5 bg-black/90 text-xs font-mono select-none">
               <span className="text-[#8e93a0] text-[11px] font-medium">bash</span>
               <button
                 onClick={() => handleCopy("lmesh share", "share")}
@@ -279,18 +312,18 @@ export default function QuickstartDocsPage() {
                 )}
               </button>
             </div>
-            <div className="p-4 font-mono text-xs overflow-x-auto text-[#f1f1f1] flex items-center gap-2.5 bg-[#0c0d12]">
+            <div className="p-4 font-mono text-xs overflow-x-auto text-[#f1f1f1] flex items-center gap-2.5 bg-black">
               <span className="text-[#555a68] select-none font-semibold">$</span>
               <code className="text-[#f1f1f1] font-mono tracking-tight">lmesh share</code>
             </div>
           </div>
 
           {/* Simulated Output Card */}
-          <div className="rounded-xl border border-[#232630] bg-[#0c0d12] overflow-hidden font-mono text-xs text-[#ededed] selection:bg-white/25 selection:text-white">
-            <div className="px-4 py-2.5 border-b border-[#1f212a] bg-[#13151c] text-[#8e93a0] text-[11px] flex items-center justify-between select-none">
+          <div className="rounded-sm border border-white/12 bg-black overflow-hidden font-mono text-xs text-[#ededed] selection:bg-white/25 selection:text-white">
+            <div className="px-4 py-2.5 border-b border-[#1f212a] bg-black/90 text-[#8e93a0] text-[11px] flex items-center justify-between select-none">
               <span className="text-[#8e93a0] text-[11px] font-medium">terminal preview</span>
             </div>
-            <div className="p-4 space-y-2 leading-relaxed bg-[#0c0d12]">
+            <div className="p-4 space-y-2 leading-relaxed bg-black">
               <div className="text-[#8e93a0]"><span className="text-[#555a68] select-none mr-2 font-semibold">$</span>lmesh share</div>
               <div className="text-[#8e93a0]">Authenticated as <span className="text-cyan-400 font-semibold">@octocat</span></div>
               <div className="text-[#8e93a0]">Connecting to relay server...</div>
@@ -324,7 +357,7 @@ export default function QuickstartDocsPage() {
           </div>
           <Link
             href="/docs/cli"
-            className="w-full sm:w-auto px-5 py-2.5 rounded-lg bg-(--btn-bg) text-(--btn-fg) font-semibold text-xs flex items-center justify-center gap-2 hover:opacity-90 transition-opacity shadow-xs"
+            className="w-full sm:w-auto px-5 py-2.5 rounded-lg bg-(--btn-bg) text-(--btn-fg) font-semibold text-xs flex items-center justify-center gap-2 hover:opacity-90 transition-opacity"
           >
             <span>Next: CLI Reference</span>
             <ArrowRightIcon className="w-4 h-4" />

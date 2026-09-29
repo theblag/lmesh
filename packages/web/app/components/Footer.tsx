@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { GitHubLogoIcon, ArrowRightIcon, CheckIcon } from "@radix-ui/react-icons";
+import { NpmIcon } from "./NpmIcon";
 
 export function Footer() {
   const [email, setEmail] = useState("");
@@ -125,10 +126,10 @@ export function Footer() {
                   <Link href={dashboardHref} className="hover:text-(--footer-fg) transition-colors">User Dashboard</Link>
                 </li>
                 <li>
-                  <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="hover:text-(--footer-fg) transition-colors">CLI Package</a>
+                  <a href="https://www.npmjs.com/package/lmesh-cli" target="_blank" rel="noopener noreferrer" className="hover:text-(--footer-fg) transition-colors">CLI Package (npm)</a>
                 </li>
                 <li>
-                  <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="hover:text-(--footer-fg) transition-colors">WebSocket Gateway</a>
+                  <a href="https://github.com/theblag/lmesh" target="_blank" rel="noopener noreferrer" className="hover:text-(--footer-fg) transition-colors">WebSocket Gateway</a>
                 </li>
               </ul>
             </div>
@@ -143,13 +144,13 @@ export function Footer() {
                   <Link href="/docs" className="hover:text-(--footer-fg) transition-colors">Documentation</Link>
                 </li>
                 <li>
-                  <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="hover:text-(--footer-fg) transition-colors">API Architecture</a>
+                  <a href="https://github.com/theblag/lmesh" target="_blank" rel="noopener noreferrer" className="hover:text-(--footer-fg) transition-colors">API Architecture</a>
                 </li>
                 <li>
-                  <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="hover:text-(--footer-fg) transition-colors">OAuth Device Flow</a>
+                  <a href="https://github.com/theblag/lmesh" target="_blank" rel="noopener noreferrer" className="hover:text-(--footer-fg) transition-colors">OAuth Device Flow</a>
                 </li>
                 <li>
-                  <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="hover:text-(--footer-fg) transition-colors">Security Model</a>
+                  <a href="https://github.com/theblag/lmesh" target="_blank" rel="noopener noreferrer" className="hover:text-(--footer-fg) transition-colors">Security Model</a>
                 </li>
               </ul>
             </div>
@@ -161,16 +162,22 @@ export function Footer() {
               </h4>
               <ul className="space-y-2 text-(--footer-text-muted)">
                 <li>
-                  <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="hover:text-(--footer-fg) transition-colors flex items-center gap-1.5">
+                  <a href="https://github.com/theblag/lmesh" target="_blank" rel="noopener noreferrer" className="hover:text-(--footer-fg) transition-colors flex items-center gap-1.5">
                     <GitHubLogoIcon className="w-3.5 h-3.5" />
                     GitHub
                   </a>
                 </li>
                 <li>
-                  <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="hover:text-(--footer-fg) transition-colors">Discussions</a>
+                  <a href="https://www.npmjs.com/package/lmesh-cli" target="_blank" rel="noopener noreferrer" className="hover:text-(--footer-fg) transition-colors flex items-center gap-1.5">
+                    <NpmIcon className="w-4 h-4 shrink-0" />
+                    npm Registry
+                  </a>
                 </li>
                 <li>
-                  <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="hover:text-(--footer-fg) transition-colors">MIT License</a>
+                  <a href="https://github.com/theblag/lmesh/discussions" target="_blank" rel="noopener noreferrer" className="hover:text-(--footer-fg) transition-colors">Discussions</a>
+                </li>
+                <li>
+                  <a href="https://github.com/theblag/lmesh/blob/main/LICENSE" target="_blank" rel="noopener noreferrer" className="hover:text-(--footer-fg) transition-colors">MIT License</a>
                 </li>
               </ul>
             </div>
